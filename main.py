@@ -7,6 +7,15 @@
 
 # self - default parameter in all methods
 
+'''
+goals, rules, feedbaak, freedom, what, the verb, and will it form a sentence
+
+3 Game Features
+ - ghost powerup
+ - multiplayer feature
+ - teleporter
+'''
+
 # ------------------------------ Importing Libraries ------------------------------
 # can rename libraries within a file: import (library) as (name)
 import pygame as pg
@@ -80,7 +89,7 @@ class Game:
 
                 if tile == 's':
                    print ("a speed potion at", row, col)
-                   Speedpotion(self, col, row)
+                   Potions(self, col, row)
                 
                 if tile == 'c':
                     Coin(self, col, row)

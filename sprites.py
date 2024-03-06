@@ -72,6 +72,8 @@ class Player(pg.sprite.Sprite):
                 self.moneybag += 1        # add 1 to moneybag
             if str (hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
                 self.speed += 200        # increase speed by 200
+            if str (hits[0].__class__.__name__) == "Potions":
+                self.speed += 200
 
     # def speed_potion(self):
     #     hits = pg.sprite.spritecollide(self, self.game.speedpotion, False)
@@ -93,7 +95,7 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('y')        # checks if player has collided with a wall vertically
         self.collide_with_group(self.game.coins, True)        # checks if player has collided with a coin
         self.collide_with_group(self.game.power_ups, True)        # checks if player has collided with a powerup
-
+        self.collide_with_group(self.game.potions, True)        # checks if player has collided with a potion
         # self.rect.x = self.x * TILESIZE
         # self.rect.y = self.y * TILESIZE
 
@@ -125,7 +127,7 @@ class Wall(pg.sprite.Sprite):
 
 
 # ------------------------------ (3) Speed Potion class ------------------------------
-class Speedpotion(pg.sprite.Sprite):
+class Potions(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.potions
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -135,12 +137,6 @@ class Speedpotion(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.x, self.y = x, y
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
-        self.speed = 1
-
-    def update(self):
-        self.rect.x += TILESIZE * self.speed
-        if self.rect.x > WIDTH or self.rect.x < 0:
-            self.speed *= -1
 
 
 
