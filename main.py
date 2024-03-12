@@ -8,7 +8,7 @@
 # self - default parameter in all methods
 
 '''
-goals, rules, feedbaak, freedom, what, the verb, and will it form a sentence
+goals, rules, feedback, freedom, what, the verb, and will it form a sentence
 
 3 Game Features
  - ghost powerup
@@ -47,6 +47,7 @@ class Game:
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'images')
         self.player_img = pg.image.load(path.join(img_folder, 'Mushroom.png')).convert_alpha()
+        self.speedpotion_img = pg.image.load(path.join(img_folder, 'Speedpotion.png')).convert_alpha()
         self.map_data = [] 
         '''
         The with statement is a context manager in Python. 
@@ -67,14 +68,14 @@ class Game:
     def new(self):
         self.all_sprites = pg.sprite.Group()        # Group(): class because it is capitalized
         self.walls = pg.sprite.Group()
-        self.potions = pg.sprite.Group()
+        #### self.potions = pg.sprite.Group()
         self.coins = pg.sprite.Group()
         self.power_ups = pg.sprite.Group()
 
         #### self.player = Player(self, 10, 10)
         #### self.all_sprites.add(self.player)
         #### for x in range(10, 20):
-            #### Wall(self, x, 5)
+        ####     Wall(self, x, 5)
         
         for row, tiles in enumerate(self.map_data):        # enumerate says where a pixel is and what it is
             print(row)
@@ -87,14 +88,16 @@ class Game:
                 if tile == 'p':
                     self.player = Player(self, col, row)
 
-                if tile == 's':
-                   print ("a speed potion at", row, col)
-                   Potions(self, col, row)
+                #### if tile == 's':
+                ####     print ("a speed potion at", row, col)
+                ####     Potions(self, col, row)
                 
                 if tile == 'c':
+                    print("a coin at", row, col)
                     Coin(self, col, row)
                 
                 if tile == "u":
+                    print("a power up at", row, col)
                     PowerUp(self, col, row)
 
     # run() purpose - runs and updates game
@@ -164,14 +167,14 @@ class Game:
             
             #### listening for keyboard actions/events
             #### if event.type == pg.KEYDOWN:
-                #### if event.key == pg.K_a: # or event.key == pg.K_LEFT:
-                    #### self.player.move(dx=-1)
-                #### if event.key == pg.K_d: # or event.key == pg.K_RIGHT:
-                    #### self.player.move(dx=1)
-                #### if event.key == pg.K_s: # or event.key == pg.K_DOWN:
-                    #### self.player.move(dy=1)
-                #### if event.key == pg.K_w: # or event.key == pg.K_UP:
-                    #### self.player.move(dy=-1)
+            ####    if event.key == pg.K_a: # or event.key == pg.K_LEFT:
+            ####        self.player.move(dx=-1)
+            ####     if event.key == pg.K_d: # or event.key == pg.K_RIGHT:
+            ####         self.player.move(dx=1)
+            ####     if event.key == pg.K_s: # or event.key == pg.K_DOWN:
+            ####         self.player.move(dy=1)
+            ####     if event.key == pg.K_w: # or event.key == pg.K_UP:
+            ####         self.player.move(dy=-1)
     
     def show_start_screen(self):
         pass

@@ -7,6 +7,8 @@
 import pygame as pg
 from settings import *
 
+import random
+
 # ------------------------------ (1) Write a player class ------------------------------
 class Player(pg.sprite.Sprite):
     # initializes Player
@@ -71,9 +73,13 @@ class Player(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "Coin":        # if entity == Coin
                 self.moneybag += 1        # add 1 to moneybag
             if str (hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
-                self.speed += 200        # increase speed by 200
-            if str (hits[0].__class__.__name__) == "Potions":
-                self.speed += 200
+                if PowerUp.random_effect(self) == 'speed':
+                    print('you have collected a speed potion')
+                    self.speed += 200        # increase speed by 200
+                elif PowerUp.random_effect(self) == 'ghost':
+                    print('you have collected a ghost potion')
+            #### if str (hits[0].__class__.__name__) == "Potions":
+            ####     self.speed += 200
 
     # def speed_potion(self):
     #     hits = pg.sprite.spritecollide(self, self.game.speedpotion, False)
@@ -95,7 +101,7 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('y')        # checks if player has collided with a wall vertically
         self.collide_with_group(self.game.coins, True)        # checks if player has collided with a coin
         self.collide_with_group(self.game.power_ups, True)        # checks if player has collided with a powerup
-        self.collide_with_group(self.game.potions, True)        # checks if player has collided with a potion
+        #### self.collide_with_group(self.game.potions, True)        # checks if player has collided with a potion
         # self.rect.x = self.x * TILESIZE
         # self.rect.y = self.y * TILESIZE
 
@@ -126,21 +132,22 @@ class Wall(pg.sprite.Sprite):
 
 
 
-# ------------------------------ (3) Speed Potion class ------------------------------
-class Potions(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.potions
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(RED)
-        self.rect = self.image.get_rect()
-        self.x, self.y = x, y
-        self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
+#### ------------------------------ (3) Speed Potion class ------------------------------
+#### class Potions(pg.sprite.Sprite):
+####     def __init__(self, game, x, y):
+####         self.groups = game.all_sprites, game.potions
+####         pg.sprite.Sprite.__init__(self, self.groups)
+####         self.game = game
+####         self.imgage = game.speedpotion_img
+####         self.image = pg.Surface((TILESIZE, TILESIZE))
+####         self.image.fill(RED)
+####         self.rect = self.image.get_rect()
+####         self.x, self.y = x, y
+####         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
 
 
 
-# ------------------------------ (4) Coin class ------------------------------
+# ------------------------------ (3) Coin class ------------------------------
 class Coin(pg.sprite.Sprite):
     # initializes Coin
     def __init__(self, game, x, y):
@@ -155,7 +162,7 @@ class Coin(pg.sprite.Sprite):
 
 
 
-# ------------------------------ (5) PowerUp class ------------------------------
+# ------------------------------ (4) PowerUp class ------------------------------
 class PowerUp(pg.sprite.Sprite):
     # initializes PowerUp
     def __init__(self, game, x, y):
@@ -163,7 +170,13 @@ class PowerUp(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(GREEN)
+        # self.image.fill(GREEN)
         self.rect = self.image.get_rect()
+        self.image2 = game.speedpotion_img
         self.x, self.y = x, y
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
+    
+    def random_effect(self):
+        effects = ['speed', 'ghost']
+        local_effect = effects[random.randint(0,1)]
+        return local_effect
