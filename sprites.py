@@ -24,6 +24,7 @@ class Player(pg.sprite.Sprite):
         self.x, self.y = x * TILESIZE, y * TILESIZE        # x & y positioning based on tiles (x & y increments multiplied by TILESIZE)
         self.speed = 300        # self.speed records player speed
         self.moneybag = 0        # moneybag tracks coins
+        self.material = True
     
     # get_keys() purpose - moves player based on keys
     def get_keys(self):
@@ -31,8 +32,8 @@ class Player(pg.sprite.Sprite):
         keys = pg.key.get_pressed()        # calls get_pressed() through variable keys
         if keys[pg.K_a]:        # if a-key pressed
             self.vx = -self.speed        # x position decreases = move left
-            print(self.rect.x)
-            print(self.rect.y)
+            # print(self.rect.x)
+            # print(self.rect.y)
         if keys[pg.K_d]:        # if d-key pressed
             self.vx = self.speed        # x position increases = move right
         if keys[pg.K_w]:        # if w-key pressed
@@ -42,29 +43,28 @@ class Player(pg.sprite.Sprite):
 
     # collide_with_walls() purpose - prevents sprites from moving through walls
     def collide_with_walls(self, dir):        # dir - direction
-        if dir == 'x':        # if sprite moving horizontally
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
-            if hits:
-                if self.vx > 0:
-                    self.x = hits[0].rect.left - self.rect.width
-                if self.vx < 0:
-                    self.x = hits[0].rect.right
-                self.vx = 0
-                self.rect.x = self.x
-        if dir == 'y':        # if sprite moving vertically
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
-            if hits:
-                if self.vy > 0:
-                    self.y = hits[0].rect.top - self.rect.height
-                if self.vy < 0:
-                    self.y = hits[0].rect.bottom
-                self.vy = 0
-                self.rect.y = self.y
-    
-    ## old motion
-    # def move(self, dx=0, dy=0):
-    #     self.x += dx
-    #     self.y += dy
+        #### if self.collide_with_group(self.game.power_ups, True):
+        ####     if PowerUp.random_effect(self) == 'ghost':
+        ####         return
+        if self.material == True:
+            if dir == 'x':        # if sprite moving horizontally
+                hits = pg.sprite.spritecollide(self, self.game.walls, False)
+                if hits:
+                    if self.vx > 0:
+                        self.x = hits[0].rect.left - self.rect.width
+                    if self.vx < 0:
+                        self.x = hits[0].rect.right
+                    self.vx = 0
+                    self.rect.x = self.x
+            if dir == 'y':        # if sprite moving vertically
+                hits = pg.sprite.spritecollide(self, self.game.walls, False)
+                if hits:
+                    if self.vy > 0:
+                            self.y = hits[0].rect.top - self.rect.height
+                    if self.vy < 0:
+                        self.y = hits[0].rect.bottom
+                    self.vy = 0
+                    self.rect.y = self.y
 
     # collide_with_group() purpose - calculates data such as coins/powerups
     def collide_with_group(self, group, kill):
@@ -80,6 +80,11 @@ class Player(pg.sprite.Sprite):
                     print('you have collected a ghost potion')
             #### if str (hits[0].__class__.__name__) == "Potions":
             ####     self.speed += 200
+    
+    ## old motion
+    # def move(self, dx=0, dy=0):
+    #     self.x += dx
+    #     self.y += dy
 
     # def speed_potion(self):
     #     hits = pg.sprite.spritecollide(self, self.game.speedpotion, False)

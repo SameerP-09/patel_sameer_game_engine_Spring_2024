@@ -56,9 +56,9 @@ class Game:
         '''
         with open(path.join(game_folder, 'map.txt'), 'rt') as f:        # opens map.txt from game folder as f
             for line in f:        # evaluates each line in f
-                print(line)
+                # print(line)
                 self.map_data.append(line)        # adds the characters in each line as str to list map_data
-                print(self.map_data)
+                # print(self.map_data)
     
     # TypeError: Player.__init__() takes 3 positional arguments but 4 were given
     # self is a built-in parameter in every method; by having self as a parameter,
@@ -78,11 +78,11 @@ class Game:
         ####     Wall(self, x, 5)
         
         for row, tiles in enumerate(self.map_data):        # enumerate says where a pixel is and what it is
-            print(row)
+            # print(row)
             for col, tile in enumerate(tiles):
                 print(col)
                 if tile == '1':
-                    print("a wall at", row, col)
+                    # print("a wall at", row, col)
                     Wall(self, col, row)
                 
                 if tile == 'p':
@@ -93,11 +93,11 @@ class Game:
                 ####     Potions(self, col, row)
                 
                 if tile == 'c':
-                    print("a coin at", row, col)
+                    # print("a coin at", row, col)
                     Coin(self, col, row)
                 
                 if tile == "u":
-                    print("a power up at", row, col)
+                    # print("a power up at", row, col)
                     PowerUp(self, col, row)
 
     # run() purpose - runs and updates game
