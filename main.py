@@ -71,6 +71,7 @@ class Game:
         #### self.potions = pg.sprite.Group()
         self.coins = pg.sprite.Group()
         self.power_ups = pg.sprite.Group()
+        self.teleports = pg.sprite.Group()
 
         #### self.player = Player(self, 10, 10)
         #### self.all_sprites.add(self.player)
@@ -102,7 +103,10 @@ class Game:
                 
                 if tile == 't':
                     Teleport(self, col, row)
-                    TELEPORTS.append([col, row])
+                
+                if tile == 'x':
+                    Teleport(self, col, row)
+                    EXIT_PORTS.append([col, row])
 
     # run() purpose - runs and updates game
     def run(self):

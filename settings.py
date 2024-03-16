@@ -51,4 +51,4 @@ LIGHTGREY = (217, 217, 214)
 # ------------------------------ Sprites ------------------------------
 PLAYER_SPEED = 300
 
-TELEPORTS = []
+EXIT_PORTS = []

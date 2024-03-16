@@ -111,6 +111,7 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('y')        # checks if player has collided with a wall vertically
         self.collide_with_group(self.game.coins, True)        # checks if player has collided with a coin
         self.collide_with_group(self.game.power_ups, True)        # checks if player has collided with a powerup
+        self.collide_with_group(self.game.teleports, True)
         #### self.collide_with_group(self.game.potions, True)        # checks if player has collided with a potion
         # self.rect.x = self.x * TILESIZE
         # self.rect.y = self.y * TILESIZE
@@ -207,5 +208,5 @@ class Teleport(pg.sprite.Sprite):
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
     
     def random_teleport(self):
-        local_teleport = TELEPORTS[random.randint(0, len(TELEPORTS) - 1)]
+        local_teleport = EXIT_PORTS[random.randint(0, len(EXIT_PORTS) - 1)]
         return local_teleport
