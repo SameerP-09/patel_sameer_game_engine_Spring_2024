@@ -11,7 +11,7 @@
 goals, rules, feedback, freedom, what, the verb, and will it form a sentence
 
 3 Game Features
- - ghost powerup
+ - random powerups
  - multiplayer feature
  - teleporter
 '''
@@ -96,9 +96,13 @@ class Game:
                     # print("a coin at", row, col)
                     Coin(self, col, row)
                 
-                if tile == "u":
+                if tile == 'u':
                     # print("a power up at", row, col)
                     PowerUp(self, col, row)
+                
+                if tile == 't':
+                    Teleport(self, col, row)
+                    TELEPORTS.append([col, row])
 
     # run() purpose - runs and updates game
     def run(self):

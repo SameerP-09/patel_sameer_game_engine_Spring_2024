@@ -72,13 +72,17 @@ class Player(pg.sprite.Sprite):
         if hits:        # if sprite collides with entity
             if str(hits[0].__class__.__name__) == "Coin":        # if entity == Coin
                 self.moneybag += 1        # add 1 to moneybag
-            if str (hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
+            if str(hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
                 if PowerUp.random_effect(self) == 'speed':
                     print('you have collected a speed potion')
                     self.speed += 200        # increase speed by 200
                 elif PowerUp.random_effect(self) == 'ghost':
                     print('you have collected a ghost potion')
                     self.material = False
+            if str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
+                local_coordinates = Teleport.random_teleport(self)
+                self.x, self.y = local_coordinates[0] * TILESIZE, local_coordinates[1] * TILESIZE
+                
             #### if str (hits[0].__class__.__name__) == "Potions":
             ####     self.speed += 200
     
@@ -186,3 +190,22 @@ class PowerUp(pg.sprite.Sprite):
         effects = ['speed', 'ghost']
         local_effect = effects[random.randint(0,1)]
         return local_effect
+
+
+
+# ------------------------------ (4) Teleport class ------------------------------
+class Teleport(pg.sprite.Sprite):
+    # initializes Teleport
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.coins
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.x, self.y = x, y
+        self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
+    
+    def random_teleport(self):
+        local_teleport = TELEPORTS[random.randint(0, len(TELEPORTS) - 1)]
+        return local_teleport

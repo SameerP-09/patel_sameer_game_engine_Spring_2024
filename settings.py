@@ -4,6 +4,11 @@
 # WIDTH, HEIGHT = 800, 600
 
 # (2) can define two variables in two seperate lines
+
+# ------------------------------ Game Mechanics ------------------------------
+
+
+
 WIDTH = 1024
 HEIGHT = 768
 
@@ -43,4 +48,7 @@ LIGHTGREY = (217, 217, 214)
 
 
 
+# ------------------------------ Sprites ------------------------------
 PLAYER_SPEED = 300
+
+TELEPORTS = []
