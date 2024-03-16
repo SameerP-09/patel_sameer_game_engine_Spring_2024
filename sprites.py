@@ -78,6 +78,7 @@ class Player(pg.sprite.Sprite):
                     self.speed += 200        # increase speed by 200
                 elif PowerUp.random_effect(self) == 'ghost':
                     print('you have collected a ghost potion')
+                    self.material = False
             #### if str (hits[0].__class__.__name__) == "Potions":
             ####     self.speed += 200
     
