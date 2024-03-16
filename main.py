@@ -47,7 +47,8 @@ class Game:
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'images')
         self.player_img = pg.image.load(path.join(img_folder, 'Mushroom.png')).convert_alpha()
-        self.speedpotion_img = pg.image.load(path.join(img_folder, 'Speedpotion.png')).convert_alpha()
+        self.powerup_img = pg.image.load(path.join(img_folder, 'PowerUp.png')).convert_alpha()
+        self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()
         self.map_data = [] 
         '''
         The with statement is a context manager in Python. 
@@ -105,7 +106,7 @@ class Game:
                     Teleport(self, col, row)
                 
                 if tile == 'x':
-                    Teleport(self, col, row)
+                    # Teleport(self, col, row)
                     EXIT_PORTS.append([col, row])
 
     # run() purpose - runs and updates game

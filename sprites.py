@@ -182,8 +182,8 @@ class PowerUp(pg.sprite.Sprite):
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
         # self.image.fill(GREEN)
+        self.image = game.powerup_img
         self.rect = self.image.get_rect()
-        self.image2 = game.speedpotion_img
         self.x, self.y = x, y
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
     
@@ -202,8 +202,9 @@ class Teleport(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(WHITE)
+        self.image = game.portal_img
         self.rect = self.image.get_rect()
+        #### self.rect = self.image.get_rect()
         self.x, self.y = x, y
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
     
