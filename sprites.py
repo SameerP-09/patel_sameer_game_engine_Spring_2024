@@ -72,14 +72,14 @@ class Player(pg.sprite.Sprite):
         if hits:        # if sprite collides with entity
             if str(hits[0].__class__.__name__) == "Coin":        # if entity == Coin
                 self.moneybag += 1        # add 1 to moneybag
-            if str(hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
+            elif str(hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
                 if PowerUp.random_effect(self) == 'speed':
                     print('you have collected a speed potion')
                     self.speed += 200        # increase speed by 200
                 elif PowerUp.random_effect(self) == 'ghost':
                     print('you have collected a ghost potion')
                     self.material = False
-            if str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
+            elif str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
                 local_coordinates = Teleport.random_teleport(self)
                 self.x, self.y = local_coordinates[0] * TILESIZE, local_coordinates[1] * TILESIZE
                 
@@ -189,7 +189,7 @@ class PowerUp(pg.sprite.Sprite):
     
     def random_effect(self):
         effects = ['speed', 'ghost']
-        local_effect = effects[random.randint(0,1)]
+        local_effect = effects[random.randint(0,len(effects) - 1)]
         return local_effect
 
 
@@ -211,3 +211,34 @@ class Teleport(pg.sprite.Sprite):
     def random_teleport(self):
         local_teleport = EXIT_PORTS[random.randint(0, len(EXIT_PORTS) - 1)]
         return local_teleport
+
+
+
+# ------------------------------ (5) Player 2 class ------------------------------
+class Player2(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        Player.__init__(self, game, x, y)
+
+    def get_keys(self):
+        self.vx, self.vy = 0, 0
+        keys = pg.key.get_pressed()        # calls get_pressed() through variable keys
+        if keys[pg.K_LEFT]:        # if a-key pressed
+            self.vx = -self.speed        # x position decreases = move left
+            # print(self.rect.x)
+            # print(self.rect.y)
+        if keys[pg.K_RIGHT]:        # if d-key pressed
+            self.vx = self.speed        # x position increases = move right
+        if keys[pg.K_UP]:        # if w-key pressed
+            self.vy = -self.speed        # y position decreases = move up (pixels in rows - start at row 0 from top)
+        if keys[pg.K_DOWN]:        # if s-key pressed
+            self.vy = self.speed        # y position increases = move down
+
+
+    def collide_with_walls(self, dir):
+        Player.collide_with_walls(self, dir)
+
+    def collide_with_group(self, group, kill):
+        Player.collide_with_group(self, group, kill)
+
+    def update(self):
+        Player.update(self)

@@ -11,9 +11,9 @@
 goals, rules, feedback, freedom, what, the verb, and will it form a sentence
 
 3 Game Features
- - random powerups
- - multiplayer feature
- - teleporter
+ 1. random powerups
+ 2. teleporter
+ 3. multiplayer feature
 '''
 
 # ------------------------------ Importing Libraries ------------------------------
@@ -83,12 +83,15 @@ class Game:
             # print(row)
             for col, tile in enumerate(tiles):
                 print(col)
-                if tile == '1':
+                if tile == '0':
                     # print("a wall at", row, col)
                     Wall(self, col, row)
                 
-                if tile == 'p':
+                if tile == '1':
                     self.player = Player(self, col, row)
+                
+                if tile == '2':
+                    self.player2 = Player2(self, col, row)
 
                 #### if tile == 's':
                 ####     print ("a speed potion at", row, col)
@@ -98,7 +101,7 @@ class Game:
                     # print("a coin at", row, col)
                     Coin(self, col, row)
                 
-                if tile == 'u':
+                if tile == 'U':
                     # print("a power up at", row, col)
                     PowerUp(self, col, row)
                 
