@@ -10,10 +10,12 @@
 '''
 goals, rules, feedback, freedom, what, the verb, and will it form a sentence
 
-3 Game Features
+Game Features
  1. random powerups
  2. teleporter
- 3. multiplayer feature
+ 3. powerup and portal graphics
+ 4. multiplayer feature
+ 5. start screen
 '''
 
 # ------------------------------ Importing Libraries ------------------------------
@@ -160,6 +162,9 @@ class Game:
         self.draw_grid()
         self.all_sprites.draw(self.screen)
         self.draw_text(self.screen, str(self.player.moneybag), 64, WHITE, 1, 1)
+
+        # uses the same turtle to draw the text --> don't move the turtle down further
+        self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 30, 0)
         pg.display.flip()
     
     # events() purpose - calls quit to close window

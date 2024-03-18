@@ -217,7 +217,18 @@ class Teleport(pg.sprite.Sprite):
 # ------------------------------ (5) Player 2 class ------------------------------
 class Player2(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        Player.__init__(self, game, x, y)
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        #### self.image = pg.Surface((TILESIZE, TILESIZE))        # creates rect with dimensions TILESIZE by TILESIZE
+        self.image = game.player_img
+        #### self.image.fill(GREEN)
+        self.rect = self.image.get_rect()
+        self.vx, self.vy = 0, 0
+        self.x, self.y = x * TILESIZE, y * TILESIZE        # x & y positioning based on tiles (x & y increments multiplied by TILESIZE)
+        self.speed = 300        # self.speed records player speed
+        self.moneybag = 0        # moneybag tracks coins
+        self.material = True
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
