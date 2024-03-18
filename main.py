@@ -156,7 +156,8 @@ class Game:
         font = pg.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
-        text_rect.topleft = (x * TILESIZE, y * TILESIZE)
+        # text_rect.topleft = (x * TILESIZE, y * TILESIZE)
+        text_rect.midtop = (x, y)
         surface.blit(text_surface, text_rect)
 
     # draw() purpose - draws grid and sprites
@@ -197,10 +198,25 @@ class Game:
             ####         self.player.move(dy=-1)
     
     def show_start_screen(self):
-        pass
+        self.screen.fill(BGCOLOR)
+        self.draw_text(self.screen, 'Start Menu: press any key to play', 50, WHITE, WIDTH/2, HEIGHT/2 - 30)
+        self.draw_text(self.screen, '2 Player Game', 20, WHITE, WIDTH/2, 2 * HEIGHT/3)
+        pg.display.flip()
+        self.wait_for_key()
 
     def show_go_screen(self):
         pass
+    
+    def wait_for_key(self):
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.quit()
+                if event.type == pg.KEYUP:
+                    waiting = False
 
 
 
@@ -208,7 +224,8 @@ class Game:
 # assigns Game to the variable, g
 g = Game()
 
-# g.show_go_screen()
+g.show_start_screen()
+
 while True:
     g.new()
     g.run()
