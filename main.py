@@ -12,6 +12,9 @@ goals, rules, feedback, freedom, what, the verb, and will it form a sentence
 
 Game Features
  1. random powerups
+    a. ghost powerup
+    b. 2x coin powerup
+    c. randomizing powerups
  2. teleporter
  3. powerup and portal graphics
  4. multiplayer feature

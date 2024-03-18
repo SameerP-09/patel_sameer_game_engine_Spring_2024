@@ -79,6 +79,9 @@ class Player(pg.sprite.Sprite):
                 elif PowerUp.random_effect(self) == 'ghost':
                     print('you have collected a ghost potion')
                     self.material = False
+                elif PowerUp.random_effect(self) == '2x coin':
+                    print('you have collected a 2x coin powerup')
+                    self.moneybag = self.moneybag * 2
             elif str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
                 local_coordinates = Teleport.random_teleport(self)
                 self.x, self.y = local_coordinates[0] * TILESIZE, local_coordinates[1] * TILESIZE
@@ -188,8 +191,8 @@ class PowerUp(pg.sprite.Sprite):
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
     
     def random_effect(self):
-        effects = ['speed', 'ghost']
-        local_effect = effects[random.randint(0,len(effects) - 1)]
+        effects = ['speed', 'ghost', '2x coin']
+        local_effect = effects[random.randint(0, len(effects) - 1)]
         return local_effect
 
 
