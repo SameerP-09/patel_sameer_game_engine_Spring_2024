@@ -69,21 +69,28 @@ class Player(pg.sprite.Sprite):
     # collide_with_group() purpose - calculates data such as coins/powerups
     def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
+        random_effect = PowerUp.random_effect(self)
         if hits:        # if sprite collides with entity
             if str(hits[0].__class__.__name__) == "Coin":        # if entity == Coin
                 self.moneybag += 1        # add 1 to moneybag
             elif str(hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
-                if PowerUp.random_effect(self) == 'speed':
+                if random_effect == 'speed':
                     print('you have collected a speed potion')
                     self.speed += 200        # increase speed by 200
-                elif PowerUp.random_effect(self) == 'ghost':
+                elif random_effect == 'ghost':
                     print('you have collected a ghost potion')
                     self.material = False        # overrides collide_with_walls()
-                elif PowerUp.random_effect(self) == '2x coin':
+                elif random_effect == '2x coin':
                     print('you have collected a 2x coin powerup')
                     self.moneybag = self.moneybag * 2        # doubles current moneybag
-                else:
-                    print('Error')
+                
+                '''
+                experienced an issue - PowerUps had the chance of having no effect (unintnetional)
+                used the following code to debug:
+                '''
+
+                #### elif random_effect == '4rth PowerUp':
+                    #### print('Error')
             elif str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
                 local_coordinates = Teleport.random_teleport(self)        # gets the coordinates of the end portal
                 # makes the players coordinates = the end portal coordinates
@@ -195,7 +202,8 @@ class PowerUp(pg.sprite.Sprite):
     
     def random_effect(self):
         effects = ['speed', 'ghost', '2x coin']
-        local_effect = effects[random.randint(0, len(effects) - 1)]
+        local_effect = effects[random.randrange(0, len(effects))]
+        # local_effect = effects[2]
         return local_effect
 
 
@@ -215,7 +223,7 @@ class Teleport(pg.sprite.Sprite):
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
     
     def random_teleport(self):
-        local_teleport = EXIT_PORTS[random.randint(0, len(EXIT_PORTS) - 1)]
+        local_teleport = EXIT_PORTS[random.randrange(0, len(EXIT_PORTS))]
         return local_teleport
 
 
