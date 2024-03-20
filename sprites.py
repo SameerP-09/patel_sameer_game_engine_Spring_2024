@@ -16,30 +16,30 @@ class Player(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        #### self.image = pg.Surface((TILESIZE, TILESIZE))        # creates rect with dimensions TILESIZE by TILESIZE
-        self.image = game.player_img
+        #### self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = game.player_img        # defines image
         #### self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
-        self.x, self.y = x * TILESIZE, y * TILESIZE        # x & y positioning based on tiles (x & y increments multiplied by TILESIZE)
-        self.speed = 300        # self.speed records player speed
-        self.moneybag = 0        # moneybag tracks coins
+        self.x, self.y = x * TILESIZE, y * TILESIZE        # x & y positioning multiplied by TILESIZE
+        self.speed = 300        # player speed
+        self.moneybag = 0        # coins collected
         self.material = True
     
     # get_keys() purpose - moves player based on keys
     def get_keys(self):
         self.vx, self.vy = 0, 0
-        keys = pg.key.get_pressed()        # calls get_pressed() through variable keys
+        keys = pg.key.get_pressed()        # calls get_pressed() in keys (variable)
         if keys[pg.K_a]:        # if a-key pressed
-            self.vx = -self.speed        # x position decreases = move left
-            # print(self.rect.x)
-            # print(self.rect.y)
+            self.vx = -self.speed        # x decreases = move left
+            #### print(self.rect.x)
+            #### print(self.rect.y)
         if keys[pg.K_d]:        # if d-key pressed
-            self.vx = self.speed        # x position increases = move right
+            self.vx = self.speed        # x increases = move right
         if keys[pg.K_w]:        # if w-key pressed
-            self.vy = -self.speed        # y position decreases = move up (pixels in rows - start at row 0 from top)
+            self.vy = -self.speed        # y decreases = move up (y starts at row 0 from top)
         if keys[pg.K_s]:        # if s-key pressed
-            self.vy = self.speed        # y position increases = move down
+            self.vy = self.speed        # y increases = move down
 
     # collide_with_walls() purpose - prevents sprites from moving through walls
     def collide_with_walls(self, dir):        # dir - direction
@@ -78,12 +78,15 @@ class Player(pg.sprite.Sprite):
                     self.speed += 200        # increase speed by 200
                 elif PowerUp.random_effect(self) == 'ghost':
                     print('you have collected a ghost potion')
-                    self.material = False
+                    self.material = False        # overrides collide_with_walls()
                 elif PowerUp.random_effect(self) == '2x coin':
                     print('you have collected a 2x coin powerup')
-                    self.moneybag = self.moneybag * 2
+                    self.moneybag = self.moneybag * 2        # doubles current moneybag
+                else:
+                    print('Error')
             elif str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
-                local_coordinates = Teleport.random_teleport(self)
+                local_coordinates = Teleport.random_teleport(self)        # gets the coordinates of the end portal
+                # makes the players coordinates = the end portal coordinates
                 self.x, self.y = local_coordinates[0] * TILESIZE, local_coordinates[1] * TILESIZE
                 
             #### if str (hits[0].__class__.__name__) == "Potions":
@@ -197,7 +200,7 @@ class PowerUp(pg.sprite.Sprite):
 
 
 
-# ------------------------------ (4) Teleport class ------------------------------
+# ------------------------------ (5) Teleport class ------------------------------
 class Teleport(pg.sprite.Sprite):
     # initializes Teleport
     def __init__(self, game, x, y):
@@ -217,14 +220,14 @@ class Teleport(pg.sprite.Sprite):
 
 
 
-# ------------------------------ (5) Player 2 class ------------------------------
+# ------------------------------ (6) Player 2 class ------------------------------
 class Player2(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         #### self.image = pg.Surface((TILESIZE, TILESIZE))        # creates rect with dimensions TILESIZE by TILESIZE
-        self.image = game.player_img
+        self.image = game.player2_img
         #### self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0

@@ -7,6 +7,7 @@
 
 # self - default parameter in all methods
 
+
 '''
 goals, rules, feedback, freedom, what, the verb, and will it form a sentence
 
@@ -19,6 +20,11 @@ Game Features
  3. powerup and portal graphics
  4. multiplayer feature
  5. start screen
+'''
+
+'''
+Sources
+    - Github Repository (start screen): https://github.com/ccozort/cozort_chris_game_engine_Spring_2024
 '''
 
 # ------------------------------ Importing Libraries ------------------------------
@@ -51,7 +57,8 @@ class Game:
     def load_data(self):
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'images')
-        self.player_img = pg.image.load(path.join(img_folder, 'Mushroom.png')).convert_alpha()
+        self.player_img = pg.image.load(path.join(img_folder, 'Mario.png')).convert_alpha()
+        self.player2_img = pg.image.load(path.join(img_folder, 'Luigi.png')).convert_alpha()
         self.powerup_img = pg.image.load(path.join(img_folder, 'PowerUp.png')).convert_alpha()
         self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()
         self.map_data = [] 
@@ -60,7 +67,7 @@ class Game:
         It is used to ensure that a resource is properly closed or released 
         after it is used. This can help to prevent errors and leaks.
         '''
-        with open(path.join(game_folder, 'map.txt'), 'rt') as f:        # opens map.txt from game folder as f
+        with open(path.join(game_folder, 'two_player_map.txt'), 'rt') as f:        # opens map.txt from game folder as f
             for line in f:        # evaluates each line in f
                 # print(line)
                 self.map_data.append(line)        # adds the characters in each line as str to list map_data
@@ -156,7 +163,7 @@ class Game:
         font = pg.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
-        # text_rect.topleft = (x * TILESIZE, y * TILESIZE)
+        #### text_rect.topleft = (x * TILESIZE, y * TILESIZE)
         text_rect.midtop = (x, y)
         surface.blit(text_surface, text_rect)
 
@@ -165,10 +172,8 @@ class Game:
         self.screen.fill(BGCOLOR)
         self.draw_grid()
         self.all_sprites.draw(self.screen)
-        self.draw_text(self.screen, str(self.player.moneybag), 64, WHITE, 1, 1)
-
-        # uses the same turtle to draw the text --> don't move the turtle down further
-        self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 30, 0)
+        self.draw_text(self.screen, str(self.player.moneybag), 64, WHITE, 1 * TILESIZE, 1 * TILESIZE)
+        self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 31 * TILESIZE, 1 * TILESIZE)
         pg.display.flip()
     
     # events() purpose - calls quit to close window
