@@ -5,7 +5,7 @@
 # (2) can define 2 variables in 2 lines
 
 # ------------------------------ Game Mechanics ------------------------------
-WIDTH = 1024
+WIDTH = 1056
 HEIGHT = 768
 
 # Both ways are valid - but be consistent with the way you use

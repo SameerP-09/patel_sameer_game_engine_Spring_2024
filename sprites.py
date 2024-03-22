@@ -203,7 +203,7 @@ class PowerUp(pg.sprite.Sprite):
     def random_effect(self):
         effects = ['speed', 'ghost', '2x coin']
         local_effect = effects[random.randrange(0, len(effects))]
-        # local_effect = effects[2]
+        #### local_effect = effects[2] - used this line of code to debug
         return local_effect
 
 
