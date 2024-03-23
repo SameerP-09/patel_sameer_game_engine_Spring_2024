@@ -292,19 +292,34 @@ class Mob(pg.sprite.Sprite):
         self.speed, self.hitpoints = 100, 100
         self.chasing, self.material = True, False
     
-    def senser(self):
+    def sensor(self):
         self.target = ''
-        if abs(self.rect.x - self.game.player.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player.rect.y) < self.chase_distance:
-            self.chasing = True
+        if abs(self.rect.x - self.game.player.rect.x) < abs(self.rect.x - self.game.player2.rect.x):
+            if abs(self.rect.x - self.game.player.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player.rect.y) < self.chase_distance:
+                self.chasing = True
+                self.target = self.game.player
+                return self.target
+            else:
+                self.chasing = False
+                return self.target
         else:
-            self.chasing = False
+            if abs(self.rect.x - self.game.player2.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player2.rect.y) < self.chase_distance:
+                self.chasing = True
+                self.target = self.game.player2
+                return self.target
+            else:
+                self.chasing = False
+                return self.target
     
     def update(self):
         if self.hitpoints <= 0:
             self.kill()
-        # self.sensor()
-        if self.chasing:
-            self.rot = (self.game.player.rect.center - self.pos).angle_to(vec(1, 0))
+        self.sensor()
+        if self.chasing and self.sensor() != '':
+            if self.target == self.game.player:
+                self.rot = (self.game.player.rect.center - self.pos).angle_to(vec(1, 0))
+            elif self.sensor() == self.game.player2:
+                self.rot = (self.game.player2.rect.center - self.pos).angle_to(vec(1, 0))
             self.image = pg.transform.rotate(self.game.mob_img, self.rot)
             self.rect = self.image.get_rect()
             self.rect.center = self.pos
