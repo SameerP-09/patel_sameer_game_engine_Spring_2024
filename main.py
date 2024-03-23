@@ -29,7 +29,7 @@ Sources
     - Github Repository (start screen): https://github.com/ccozort/cozort_chris_game_engine_Spring_2024
 '''
 
-# ------------------------------ Importing Libraries ------------------------------
+# ------------------------------ Importing Libraries/Modules ------------------------------
 # can rename libraries within a file: import (library) as (name)
 import pygame as pg
 
@@ -94,6 +94,7 @@ class Game:
         self.player2_img = pg.image.load(path.join(img_folder, 'Luigi.png')).convert_alpha()
         self.powerup_img = pg.image.load(path.join(img_folder, 'PowerUp.png')).convert_alpha()
         self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()
+        self.mob_img = pg.image.load(path.join(img_folder, 'Ghost.png')).convert_alpha()
         self.map_data = []
 
         '''
@@ -123,6 +124,7 @@ class Game:
         self.coins = pg.sprite.Group()
         self.power_ups = pg.sprite.Group()
         self.teleports = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
 
         #### self.player = Player(self, 10, 10)
         #### self.all_sprites.add(self.player)
@@ -161,6 +163,9 @@ class Game:
                 if tile == 'X':
                     # Teleport(self, col, row)
                     EXIT_PORTS.append([col, row])
+                
+                if tile == 'M':
+                    Mob(self, col, row)
 
     # run() purpose - runs and updates game
     def run(self):

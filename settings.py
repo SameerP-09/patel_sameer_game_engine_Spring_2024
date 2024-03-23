@@ -1,5 +1,8 @@
 # This file was created by: Sameer Patel
 
+# ------------------------------ Importing Libraries/Modules ------------------------------
+import pygame as pg
+
 # (1) can define 2 variables in 1 line: WIDTH, HEIGHT = 800, 600
 
 # (2) can define 2 variables in 2 lines
@@ -36,3 +39,5 @@ LIGHTGREY = (217, 217, 214)        # light grey - combination of white and black
 PLAYER_SPEED = 300
 
 EXIT_PORTS = []        # list tracking locations of end portals
+
+MOB_HIT_RECT = pg.Rect(0,0,96,96)

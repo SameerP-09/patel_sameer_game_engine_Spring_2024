@@ -5,9 +5,11 @@
 
 # ------------------------------ Importing Libraries ------------------------------
 import pygame as pg
+import random
+
 from settings import *
 
-import random
+vec = pg.math.Vector2
 
 # ------------------------------ (1) Write a player class ------------------------------
 class Player(pg.sprite.Sprite):
@@ -193,7 +195,7 @@ class PowerUp(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.power_ups
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
+        #### self.image = pg.Surface((TILESIZE, TILESIZE))
         # self.image.fill(GREEN)
         self.image = game.powerup_img
         self.rect = self.image.get_rect()
@@ -267,3 +269,49 @@ class Player2(pg.sprite.Sprite):
 
     def update(self):
         Player.update(self)
+
+
+
+# ------------------------------ (7) Mob class ------------------------------
+class Mob(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.mobs
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        #### self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = self.game.mob_img
+        self.rect = self.image.get_rect()
+
+        self.hit_rect = MOB_HIT_RECT.copy()
+        self.hit_rect.center = self.rect.center
+        self.pos = vec(0, 0) * TILESIZE
+        self.vel, self.acc = vec(0, 0), vec(0, 0)
+
+        self.rect.center = self.pos
+        self.rot, self.chase_distance = 0, 500
+        self.speed, self.hitpoints = 100, 100
+        self.chasing, self.material = True, False
+    
+    def senser(self):
+        self.target = ''
+        if abs(self.rect.x - self.game.player.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player.rect.y) < self.chase_distance:
+            self.chasing = True
+        else:
+            self.chasing = False
+    
+    def update(self):
+        if self.hitpoints <= 0:
+            self.kill()
+        # self.sensor()
+        if self.chasing:
+            self.rot = (self.game.player.rect.center - self.pos).angle_to(vec(1, 0))
+            self.image = pg.transform.rotate(self.game.mob_img, self.rot)
+            self.rect = self.image.get_rect()
+            self.rect.center = self.pos
+            self.acc = vec(self.speed, 0).rotate(-self.rot)
+            self.acc += self.vel * -1
+            self.vel += self.acc * self.game.dt
+            # equation of motion
+            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+            # hit_rect used to account for adjusting the square collision when image rotates
+            #### self.rect.center = self.hit_rect.center
