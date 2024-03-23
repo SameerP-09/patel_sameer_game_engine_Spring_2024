@@ -284,7 +284,7 @@ class Mob(pg.sprite.Sprite):
 
         self.hit_rect = MOB_HIT_RECT.copy()
         self.hit_rect.center = self.rect.center
-        self.pos = vec(0, 0) * TILESIZE
+        self.pos = vec(x, y) * TILESIZE
         self.vel, self.acc = vec(0, 0), vec(0, 0)
 
         self.rect.center = self.pos
