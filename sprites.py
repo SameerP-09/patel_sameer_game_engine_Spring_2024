@@ -26,6 +26,7 @@ class Player(pg.sprite.Sprite):
         self.x, self.y = x * TILESIZE, y * TILESIZE        # x & y positioning multiplied by TILESIZE
         self.speed = 300        # player speed
         self.moneybag = 0        # coins collected
+        self.hitpoints = 100
         self.material = True
     
     # get_keys() purpose - moves player based on keys
@@ -98,6 +99,9 @@ class Player(pg.sprite.Sprite):
                 # makes the players coordinates = the end portal coordinates
                 self.x, self.y = local_coordinates[0] * TILESIZE, local_coordinates[1] * TILESIZE
                 
+            elif str(hits[0].__class__.__name__) == 'Mob':
+                self.hitpoints = self.hitpoints - 50
+            
             #### if str (hits[0].__class__.__name__) == "Potions":
             ####     self.speed += 200
     
@@ -127,6 +131,13 @@ class Player(pg.sprite.Sprite):
         self.collide_with_group(self.game.coins, True)        # checks if player has collided with a coin
         self.collide_with_group(self.game.power_ups, True)        # checks if player has collided with a powerup
         self.collide_with_group(self.game.teleports, True)
+        self.collide_with_group(self.game.mobs, False)
+
+        if self.hitpoints <= 0:
+            self.kill()
+        
+        return self.hitpoints
+
         #### self.collide_with_group(self.game.potions, True)        # checks if player has collided with a potion
         # self.rect.x = self.x * TILESIZE
         # self.rect.y = self.y * TILESIZE
@@ -244,6 +255,7 @@ class Player2(pg.sprite.Sprite):
         self.x, self.y = x * TILESIZE, y * TILESIZE        # x & y positioning based on tiles (x & y increments multiplied by TILESIZE)
         self.speed = 300        # self.speed records player speed
         self.moneybag = 0        # moneybag tracks coins
+        self.hitpoints = 100
         self.material = True
 
     def get_keys(self):
@@ -294,7 +306,13 @@ class Mob(pg.sprite.Sprite):
     
     def sensor(self):
         self.target = ''
-        if abs(self.rect.x - self.game.player.rect.x) < abs(self.rect.x - self.game.player2.rect.x):
+        if self.game.player.hitpoints <= 0 and self.game.player2.hitpoints > 0:
+            self.target = self.game.player2
+            return self.target
+        elif self.game.player.hitpoints > 0 and self.game.player2.hitpoints <= 0:
+            self.target = self.game.player
+            return self.target
+        elif abs(self.rect.x - self.game.player.rect.x) < abs(self.rect.x - self.game.player2.rect.x):
             if abs(self.rect.x - self.game.player.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player.rect.y) < self.chase_distance:
                 self.chasing = True
                 self.target = self.game.player
@@ -302,7 +320,7 @@ class Mob(pg.sprite.Sprite):
             else:
                 self.chasing = False
                 return self.target
-        else:
+        elif abs(self.rect.x - self.game.player.rect.x) < abs(self.rect.x - self.game.player2.rect.x):
             if abs(self.rect.x - self.game.player2.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player2.rect.y) < self.chase_distance:
                 self.chasing = True
                 self.target = self.game.player2

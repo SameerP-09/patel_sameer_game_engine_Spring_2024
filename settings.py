@@ -37,6 +37,8 @@ LIGHTGREY = (217, 217, 214)        # light grey - combination of white and black
 
 # ------------------------------ Sprites ------------------------------
 PLAYER_SPEED = 300
+#### P1_HP = 100
+#### P2_HP = 100
 
 EXIT_PORTS = []        # list tracking locations of end portals
 
