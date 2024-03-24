@@ -301,7 +301,7 @@ class Mob(pg.sprite.Sprite):
 
         self.rect.center = self.pos
         self.rot, self.chase_distance = 0, 500
-        self.speed, self.hitpoints = 100, 100
+        self.speed, self.hitpoints = 400, 100
         self.chasing, self.material = True, False
     
     def sensor(self):
@@ -309,10 +309,10 @@ class Mob(pg.sprite.Sprite):
         if self.game.player.hitpoints <= 0 and self.game.player2.hitpoints > 0:
             self.target = self.game.player2
             return self.target
-        elif self.game.player.hitpoints > 0 and self.game.player2.hitpoints <= 0:
+        if self.game.player.hitpoints > 0 and self.game.player2.hitpoints <= 0:
             self.target = self.game.player
             return self.target
-        elif abs(self.rect.x - self.game.player.rect.x) < abs(self.rect.x - self.game.player2.rect.x):
+        if abs(self.rect.x - self.game.player.rect.x) < abs(self.rect.x - self.game.player2.rect.x):
             if abs(self.rect.x - self.game.player.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player.rect.y) < self.chase_distance:
                 self.chasing = True
                 self.target = self.game.player
@@ -320,7 +320,7 @@ class Mob(pg.sprite.Sprite):
             else:
                 self.chasing = False
                 return self.target
-        elif abs(self.rect.x - self.game.player.rect.x) < abs(self.rect.x - self.game.player2.rect.x):
+        if abs(self.rect.x - self.game.player.rect.x) > abs(self.rect.x - self.game.player2.rect.x):
             if abs(self.rect.x - self.game.player2.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player2.rect.y) < self.chase_distance:
                 self.chasing = True
                 self.target = self.game.player2
@@ -334,7 +334,7 @@ class Mob(pg.sprite.Sprite):
             self.kill()
         self.sensor()
         if self.chasing and self.sensor() != '':
-            if self.target == self.game.player:
+            if self.sensor() == self.game.player:
                 self.rot = (self.game.player.rect.center - self.pos).angle_to(vec(1, 0))
             elif self.sensor() == self.game.player2:
                 self.rot = (self.game.player2.rect.center - self.pos).angle_to(vec(1, 0))
