@@ -165,7 +165,7 @@ class Game:
                     EXIT_PORTS.append([col, row])
                 
                 if tile == 'M':
-                    Mob(self, col, row)
+                    self.mob = Mob(self, col, row)
 
     # run() purpose - runs and updates game
     def run(self):

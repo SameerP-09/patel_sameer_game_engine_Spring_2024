@@ -7,6 +7,7 @@
 import pygame as pg
 import random
 
+from math import sqrt
 from settings import *
 
 vec = pg.math.Vector2
@@ -28,6 +29,7 @@ class Player(pg.sprite.Sprite):
         self.moneybag = 0        # coins collected
         self.hitpoints = 100
         self.material = True
+        self.hypotenuse = ''
     
     # get_keys() purpose - moves player based on keys
     def get_keys(self):
@@ -257,6 +259,7 @@ class Player2(pg.sprite.Sprite):
         self.moneybag = 0        # moneybag tracks coins
         self.hitpoints = 100
         self.material = True
+        self.hypotenuse = ''
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
@@ -301,18 +304,29 @@ class Mob(pg.sprite.Sprite):
 
         self.rect.center = self.pos
         self.rot, self.chase_distance = 0, 500
-        self.speed, self.hitpoints = 400, 100
+        self.speed, self.hitpoints = 100, 100
         self.chasing, self.material = True, False
     
     def sensor(self):
         self.target = ''
+        player_x_dist = self.rect.x - self.game.player.rect.x
+        player2_x_dist = self.rect.x - self.game.player2.rect.x
+        player_y_dist = self.rect.y - self.game.player.rect.y
+        player2_y_dist = self.rect.y - self.game.player2.rect.y
+        
+        self.game.player.hypotenuse = sqrt(player_x_dist**2 + player_y_dist**2)
+        self.game.player2.hypotenuse = sqrt(player2_x_dist**2 + player2_y_dist**2)
+        
         if self.game.player.hitpoints <= 0 and self.game.player2.hitpoints > 0:
             self.target = self.game.player2
             return self.target
+        
         if self.game.player.hitpoints > 0 and self.game.player2.hitpoints <= 0:
             self.target = self.game.player
             return self.target
-        if abs(self.rect.x - self.game.player.rect.x) < abs(self.rect.x - self.game.player2.rect.x):
+        
+        #### if abs(self.rect.x - self.game.player.rect.x) < abs(self.rect.x - self.game.player2.rect.x):
+        if self.game.player.hypotenuse < self.game.player2.hypotenuse:
             if abs(self.rect.x - self.game.player.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player.rect.y) < self.chase_distance:
                 self.chasing = True
                 self.target = self.game.player
@@ -320,7 +334,9 @@ class Mob(pg.sprite.Sprite):
             else:
                 self.chasing = False
                 return self.target
-        if abs(self.rect.x - self.game.player.rect.x) > abs(self.rect.x - self.game.player2.rect.x):
+        
+        #### if abs(self.rect.x - self.game.player.rect.x) > abs(self.rect.x - self.game.player2.rect.x):
+        if self.game.player2.hypotenuse < self.game.player.hypotenuse:
             if abs(self.rect.x - self.game.player2.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player2.rect.y) < self.chase_distance:
                 self.chasing = True
                 self.target = self.game.player2
