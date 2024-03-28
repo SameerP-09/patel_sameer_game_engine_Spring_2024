@@ -102,7 +102,7 @@ class Player(pg.sprite.Sprite):
                 self.x, self.y = local_coordinates[0] * TILESIZE, local_coordinates[1] * TILESIZE
                 
             elif str(hits[0].__class__.__name__) == 'Mob':
-                self.hitpoints = self.hitpoints - 50
+                self.hitpoints = self.hitpoints - 1
             
             #### if str (hits[0].__class__.__name__) == "Potions":
             ####     self.speed += 200
@@ -132,7 +132,7 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('y')        # checks if player has collided with a wall vertically
         self.collide_with_group(self.game.coins, True)        # checks if player has collided with a coin
         self.collide_with_group(self.game.power_ups, True)        # checks if player has collided with a powerup
-        self.collide_with_group(self.game.teleports, True)
+        self.collide_with_group(self.game.teleports, False)
         self.collide_with_group(self.game.mobs, False)
 
         if self.hitpoints <= 0:
@@ -227,7 +227,7 @@ class PowerUp(pg.sprite.Sprite):
 class Teleport(pg.sprite.Sprite):
     # initializes Teleport
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.coins
+        self.groups = game.all_sprites, game.teleports
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
@@ -275,7 +275,6 @@ class Player2(pg.sprite.Sprite):
         if keys[pg.K_DOWN]:        # if s-key pressed
             self.vy = self.speed        # y position increases = move down
 
-
     def collide_with_walls(self, dir):
         Player.collide_with_walls(self, dir)
 
@@ -303,7 +302,7 @@ class Mob(pg.sprite.Sprite):
         self.vel, self.acc = vec(0, 0), vec(0, 0)
 
         self.rect.center = self.pos
-        self.rot, self.chase_distance = 0, 500
+        self.rot, self.chase_distance = 0, 200
         self.speed, self.hitpoints = 100, 100
         self.chasing, self.material = True, False
     
@@ -316,18 +315,28 @@ class Mob(pg.sprite.Sprite):
         
         self.game.player.hypotenuse = sqrt(player_x_dist**2 + player_y_dist**2)
         self.game.player2.hypotenuse = sqrt(player2_x_dist**2 + player2_y_dist**2)
-        
-        if self.game.player.hitpoints <= 0 and self.game.player2.hitpoints > 0:
-            self.target = self.game.player2
-            return self.target
-        
+                
         if self.game.player.hitpoints > 0 and self.game.player2.hitpoints <= 0:
-            self.target = self.game.player
-            return self.target
+            if self.game.player.hypotenuse < self.chase_distance:
+                self.chasing = True
+                self.target = self.game.player
+                return self.target
+            else:
+                self.chasing = False
+                return self.target
+        
+        elif self.game.player.hitpoints <= 0 and self.game.player2.hitpoints > 0:
+            if self.game.player2.hypotenuse < self.chase_distance:
+                self.chasing = True
+                self.target = self.game.player2
+                return self.target
+            else:
+                self.chasing = False
+                return self.target
         
         #### if abs(self.rect.x - self.game.player.rect.x) < abs(self.rect.x - self.game.player2.rect.x):
-        if self.game.player.hypotenuse < self.game.player2.hypotenuse:
-            if abs(self.rect.x - self.game.player.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player.rect.y) < self.chase_distance:
+        elif self.game.player.hypotenuse < self.game.player2.hypotenuse:
+            if self.game.player.hypotenuse < self.chase_distance:
                 self.chasing = True
                 self.target = self.game.player
                 return self.target
@@ -336,8 +345,8 @@ class Mob(pg.sprite.Sprite):
                 return self.target
         
         #### if abs(self.rect.x - self.game.player.rect.x) > abs(self.rect.x - self.game.player2.rect.x):
-        if self.game.player2.hypotenuse < self.game.player.hypotenuse:
-            if abs(self.rect.x - self.game.player2.rect.x) < self.chase_distance and abs(self.rect.y - self.game.player2.rect.y) < self.chase_distance:
+        elif self.game.player2.hypotenuse < self.game.player.hypotenuse:
+            if self.game.player2.hypotenuse < self.chase_distance:
                 self.chasing = True
                 self.target = self.game.player2
                 return self.target
