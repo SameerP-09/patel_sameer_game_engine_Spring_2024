@@ -86,7 +86,6 @@ class Game:
 
     # load_data() purpose - records game data (scores & positioning)
     def load_data(self):
-
         # loads images
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'images')
@@ -94,7 +93,9 @@ class Game:
         self.player2_img = pg.image.load(path.join(img_folder, 'Luigi.png')).convert_alpha()
         self.powerup_img = pg.image.load(path.join(img_folder, 'PowerUp.png')).convert_alpha()
         self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()
-        self.mob_img = pg.image.load(path.join(img_folder, 'Ghost.png')).convert_alpha()
+        self.mob_img = pg.image.load(path.join(img_folder, 'Mob.png')).convert_alpha()
+        self.ghost_mario_img = pg.image.load(path.join(img_folder, 'Ghost_Mario.png')).convert_alpha()
+        self.ghost_luigi_img = pg.image.load(path.join(img_folder, 'Ghost_luigi.png')).convert_alpha()
         self.map_data = []
 
         '''

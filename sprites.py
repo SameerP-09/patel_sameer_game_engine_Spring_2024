@@ -72,7 +72,7 @@ class Player(pg.sprite.Sprite):
                     self.rect.y = self.y
 
     # collide_with_group() purpose - calculates data such as coins/powerups
-    def collide_with_group(self, group, kill):
+    def collide_with_group(self, group, kill, game):
         hits = pg.sprite.spritecollide(self, group, kill)
         random_effect = PowerUp.random_effect(self)
         if hits:        # if sprite collides with entity
@@ -85,6 +85,7 @@ class Player(pg.sprite.Sprite):
                 elif random_effect == 'ghost':
                     print('you have collected a ghost potion')
                     self.material = False        # overrides collide_with_walls()
+                    self.image = game.ghost_mario_img
                 elif random_effect == '2x coin':
                     print('you have collected a 2x coin powerup')
                     self.moneybag = self.moneybag * 2        # doubles current moneybag
@@ -130,10 +131,10 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('x')        # checks if player has collided with a wall horizontally
         self.rect.y = self.y
         self.collide_with_walls('y')        # checks if player has collided with a wall vertically
-        self.collide_with_group(self.game.coins, True)        # checks if player has collided with a coin
-        self.collide_with_group(self.game.power_ups, True)        # checks if player has collided with a powerup
-        self.collide_with_group(self.game.teleports, False)
-        self.collide_with_group(self.game.mobs, False)
+        self.collide_with_group(self.game.coins, True, self.game)        # checks if player has collided with a coin
+        self.collide_with_group(self.game.power_ups, True, self.game)        # checks if player has collided with a powerup
+        self.collide_with_group(self.game.teleports, False, self.game)
+        self.collide_with_group(self.game.mobs, False, self.game)
 
         if self.hitpoints <= 0:
             self.kill()
@@ -278,9 +279,32 @@ class Player2(pg.sprite.Sprite):
     def collide_with_walls(self, dir):
         Player.collide_with_walls(self, dir)
 
-    def collide_with_group(self, group, kill):
-        Player.collide_with_group(self, group, kill)
-
+    def collide_with_group(self, group, kill, game):
+        hits = pg.sprite.spritecollide(self, group, kill)
+        random_effect = PowerUp.random_effect(self)
+        if hits:        # if sprite collides with entity
+            if str(hits[0].__class__.__name__) == "Coin":        # if entity == Coin
+                self.moneybag += 1        # add 1 to moneybag
+            
+            elif str(hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
+                if random_effect == 'speed':
+                    print('you have collected a speed potion')
+                    self.speed += 200        # increase speed by 200
+                elif random_effect == 'ghost':
+                    print('you have collected a ghost potion')
+                    self.material = False        # overrides collide_with_walls()
+                    self.image = game.ghost_luigi_img
+                elif random_effect == '2x coin':
+                    print('you have collected a 2x coin powerup')
+                    self.moneybag = self.moneybag * 2        # doubles current moneybag
+            
+            elif str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
+                local_coordinates = Teleport.random_teleport(self)        # gets the coordinates of the end portal
+                self.x, self.y = local_coordinates[0] * TILESIZE, local_coordinates[1] * TILESIZE
+                
+            elif str(hits[0].__class__.__name__) == 'Mob':
+                self.hitpoints = self.hitpoints - 1
+    
     def update(self):
         Player.update(self)
 
