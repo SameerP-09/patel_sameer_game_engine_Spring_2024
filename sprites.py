@@ -80,23 +80,18 @@ class Player(pg.sprite.Sprite):
                 self.moneybag += 1        # add 1 to moneybag
             elif str(hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
                 if random_effect == 'speed':
-                    print('you have collected a speed potion')
+                    print('you have collected the speed potion')
                     self.speed += 200        # increase speed by 200
                 elif random_effect == 'ghost':
-                    print('you have collected a ghost potion')
+                    print('you have collected the ghost potion')
                     self.material = False        # overrides collide_with_walls()
                     self.image = game.ghost_mario_img
                 elif random_effect == '2x coin':
-                    print('you have collected a 2x coin powerup')
+                    print('you have collected the 2x coin powerup')
                     self.moneybag = self.moneybag * 2        # doubles current moneybag
-                
-                '''
-                experienced an issue - PowerUps had the chance of having no effect (unintnetional)
-                used the following code to debug:
-                '''
-
-                #### elif random_effect == '4rth PowerUp':
-                    #### print('Error')
+                elif random_effect == 'regen':
+                    print('you have collected the regeneration powerup')
+                    self.hitpoints += 50
             elif str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
                 local_coordinates = Teleport.random_teleport(self)        # gets the coordinates of the end portal
                 # makes the players coordinates = the end portal coordinates
@@ -217,7 +212,7 @@ class PowerUp(pg.sprite.Sprite):
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
     
     def random_effect(self):
-        effects = ['speed', 'ghost', '2x coin']
+        effects = ['speed', 'ghost', '2x coin', 'regen']
         local_effect = effects[random.randrange(0, len(effects))]
         #### local_effect = effects[2] - used this line of code to debug
         return local_effect

@@ -231,10 +231,12 @@ class Game:
         self.draw_text(self.screen, str(self.player.moneybag), 64, WHITE, 1 * TILESIZE, 1 * TILESIZE)
         self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 31 * TILESIZE, 1 * TILESIZE)
         self.draw_text(self.screen, str(self.timer.countdown(45)), 24, WHITE, WIDTH/2 - 32, 2)
+
         if self.player.hitpoints > 0:
             draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y - 20, self.player.hitpoints)
-        elif self.player2.hitpoints > 0:
+        if self.player2.hitpoints > 0:
             draw_health_bar(self.screen, self.player2.rect.x, self.player2.rect.y - 20, self.player2.hitpoints)
+        
         pg.display.flip()
     
     # events() purpose - calls quit to close window
