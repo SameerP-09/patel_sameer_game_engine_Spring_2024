@@ -73,6 +73,17 @@ class Cooldown():
 
 
 # ------------------------------ Creating Game (class) ------------------------------
+def draw_health_bar(surf, x, y, pct):
+        if pct < 0:
+            pct = 0
+        BAR_LENGTH = 32
+        BAR_HEIGHT = 10
+        fill = (pct / 100) * BAR_LENGTH
+        outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+        fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
+        pg.draw.rect(surf, GREEN, fill_rect)
+        pg.draw.rect(surf, WHITE, outline_rect, 2)
+
 class Game:
     # initializes Game
     def __init__(self):
@@ -220,6 +231,10 @@ class Game:
         self.draw_text(self.screen, str(self.player.moneybag), 64, WHITE, 1 * TILESIZE, 1 * TILESIZE)
         self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 31 * TILESIZE, 1 * TILESIZE)
         self.draw_text(self.screen, str(self.timer.countdown(45)), 24, WHITE, WIDTH/2 - 32, 2)
+        if self.player.hitpoints > 0:
+            draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y - 20, self.player.hitpoints)
+        elif self.player2.hitpoints > 0:
+            draw_health_bar(self.screen, self.player2.rect.x, self.player2.rect.y - 20, self.player2.hitpoints)
         pg.display.flip()
     
     # events() purpose - calls quit to close window
