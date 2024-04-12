@@ -25,6 +25,14 @@ Game Features
 '''
 
 '''
+Feedback
+ * Confusion about what PowerUps have been collected
+ * PowerUp cooldowns
+ - Confine players to arena
+ * End screen
+'''
+
+'''
 Sources
     - Github Repository (start screen): https://github.com/ccozort/cozort_chris_game_engine_Spring_2024
 '''
@@ -107,6 +115,7 @@ class Game:
         self.mob_img = pg.image.load(path.join(img_folder, 'Mob.png')).convert_alpha()
         self.ghost_mario_img = pg.image.load(path.join(img_folder, 'Ghost_Mario.png')).convert_alpha()
         self.ghost_luigi_img = pg.image.load(path.join(img_folder, 'Ghost_luigi.png')).convert_alpha()
+        self.border_img = pg.image.load(path.join(img_folder, 'Border.png')).convert_alpha()
         self.map_data = []
 
         '''
@@ -137,6 +146,7 @@ class Game:
         self.power_ups = pg.sprite.Group()
         self.teleports = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
+        self.borders = pg.sprite.Group()
 
         #### self.player = Player(self, 10, 10)
         #### self.all_sprites.add(self.player)
@@ -178,6 +188,9 @@ class Game:
                 
                 if tile == 'M':
                     self.mob = Mob(self, col, row)
+
+                if tile == 'B':
+                    Border(self, col, row)
 
     # run() purpose - runs and updates game
     def run(self):
@@ -228,9 +241,9 @@ class Game:
         self.screen.fill(BGCOLOR)
         self.draw_grid()
         self.all_sprites.draw(self.screen)
-        self.draw_text(self.screen, str(self.player.moneybag), 64, WHITE, 1 * TILESIZE, 1 * TILESIZE)
+        self.draw_text(self.screen, str(self.player.moneybag), 64, WHITE, 2 * TILESIZE, 1 * TILESIZE)
         self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 31 * TILESIZE, 1 * TILESIZE)
-        self.draw_text(self.screen, str(self.timer.countdown(45)), 24, WHITE, WIDTH/2 - 32, 2)
+        self.draw_text(self.screen, str(self.timer.countdown(45)), 24, BLACK, WIDTH/2 - 32, 2)
 
         if self.player.hitpoints > 0:
             draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y - 20, self.player.hitpoints)

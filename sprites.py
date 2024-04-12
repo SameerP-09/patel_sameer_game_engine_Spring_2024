@@ -70,6 +70,26 @@ class Player(pg.sprite.Sprite):
                         self.y = hits[0].rect.bottom
                     self.vy = 0
                     self.rect.y = self.y
+    
+    def collide_with_borders(self, dir):
+        if dir == 'x':        # if sprite moving horizontally
+            hits = pg.sprite.spritecollide(self, self.game.borders, False)
+            if hits:
+                if self.vx > 0:
+                    self.x = hits[0].rect.left - self.rect.width
+                if self.vx < 0:
+                    self.x = hits[0].rect.right
+                self.vx = 0
+                self.rect.x = self.x
+        if dir == 'y':        # if sprite moving vertically
+            hits = pg.sprite.spritecollide(self, self.game.borders, False)
+            if hits:
+                if self.vy > 0:
+                        self.y = hits[0].rect.top - self.rect.height
+                if self.vy < 0:
+                    self.y = hits[0].rect.bottom
+                self.vy = 0
+                self.rect.y = self.y
 
     # collide_with_group() purpose - calculates data such as coins/powerups
     def collide_with_group(self, group, kill, game):
@@ -78,20 +98,25 @@ class Player(pg.sprite.Sprite):
         if hits:        # if sprite collides with entity
             if str(hits[0].__class__.__name__) == "Coin":        # if entity == Coin
                 self.moneybag += 1        # add 1 to moneybag
+
             elif str(hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
                 if random_effect == 'speed':
                     print('you have collected the speed potion')
                     self.speed += 200        # increase speed by 200
+
                 elif random_effect == 'ghost':
                     print('you have collected the ghost potion')
                     self.material = False        # overrides collide_with_walls()
                     self.image = game.ghost_mario_img
+
                 elif random_effect == '2x coin':
                     print('you have collected the 2x coin powerup')
                     self.moneybag = self.moneybag * 2        # doubles current moneybag
+
                 elif random_effect == 'regen':
                     print('you have collected the regeneration powerup')
                     self.hitpoints += 50
+
             elif str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
                 local_coordinates = Teleport.random_teleport(self)        # gets the coordinates of the end portal
                 # makes the players coordinates = the end portal coordinates
@@ -124,8 +149,10 @@ class Player(pg.sprite.Sprite):
         self.y += self.vy * self.game.dt
         self.rect.x = self.x
         self.collide_with_walls('x')        # checks if player has collided with a wall horizontally
+        self.collide_with_borders('x')        # checks if player has collided with a border horizontally
         self.rect.y = self.y
         self.collide_with_walls('y')        # checks if player has collided with a wall vertically
+        self.collide_with_borders('y')        # checks if player has collided with a border vertically
         self.collide_with_group(self.game.coins, True, self.game)        # checks if player has collided with a coin
         self.collide_with_group(self.game.power_ups, True, self.game)        # checks if player has collided with a powerup
         self.collide_with_group(self.game.teleports, False, self.game)
@@ -273,6 +300,9 @@ class Player2(pg.sprite.Sprite):
 
     def collide_with_walls(self, dir):
         Player.collide_with_walls(self, dir)
+    
+    def collide_with_borders(self, dir):
+        Player.collide_with_borders(self, dir)
 
     def collide_with_group(self, group, kill, game):
         hits = pg.sprite.spritecollide(self, group, kill)
@@ -322,7 +352,7 @@ class Mob(pg.sprite.Sprite):
 
         self.rect.center = self.pos
         self.rot, self.chase_distance = 0, 200
-        self.speed, self.hitpoints = 100, 100
+        self.speed, self.hitpoints = 300, 100
         self.chasing, self.material = True, False
     
     def sensor(self):
@@ -392,3 +422,18 @@ class Mob(pg.sprite.Sprite):
             self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
             # hit_rect used to account for adjusting the square collision when image rotates
             #### self.rect.center = self.hit_rect.center
+
+
+
+# ------------------------------ (8) Border class ------------------------------
+class Border(pg.sprite.Sprite):
+    # initializes Border
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.borders
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = self.game.border_img
+        self.rect = self.image.get_rect()
+        self.x, self.y = x, y
+        self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
+        self.speed = 0
