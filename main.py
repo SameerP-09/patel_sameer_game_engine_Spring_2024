@@ -63,11 +63,11 @@ class Cooldown():
     # must use ticking to count up or down
     def ticking(self):
         self.current_time = floor((pg.time.get_ticks())/1000)
-        self.delta = self.current_time - self.event_time
+        self.delta = self.current_time + self.event_time
     
     # resets event time to zero - cooldown reset
-    def countdown(self, x):
-        x = x - self.delta
+    def time(self, x):
+        x = x + self.delta
         if x != None:
             return x
     
@@ -243,7 +243,7 @@ class Game:
         self.all_sprites.draw(self.screen)
         self.draw_text(self.screen, str(self.player.moneybag), 64, WHITE, 2 * TILESIZE, 1 * TILESIZE)
         self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 31 * TILESIZE, 1 * TILESIZE)
-        self.draw_text(self.screen, str(self.timer.countdown(45)), 24, BLACK, WIDTH/2 - 32, 2)
+        self.draw_text(self.screen, str(self.timer.time(0)), 24, BLACK, WIDTH/2 - 32, 2)
 
         if self.player.hitpoints > 0:
             draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y - 20, self.player.hitpoints)
