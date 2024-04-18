@@ -8,37 +8,67 @@ import pygame as pg
 import random
 
 from math import sqrt
+from os import path
+
 from settings import *
+from utils import *
 
 vec = pg.math.Vector2
 
-# ------------------------------ (1) Write a player class ------------------------------
-class Player(pg.sprite.Sprite):
-    # initializes Player
+Player1_sheet = 'mario.png'
+game_folder = path.dirname(__file__)
+img_folder = path.join(game_folder, 'images')
+
+
+
+# ------------------------------ (1) Defining Player1 Class ------------------------------
+class Spritesheet:
+    # utility class for loading and parsing spritesheets
+    def __init__(self, filename):
+        self.spritesheet = pg.image.load(filename).convert()
+
+    def get_image(self, x, y, width, height):
+        # grab an image out of a larger spritesheet
+        image = pg.Surface((width, height))
+        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+        # image = pg.transform.scale(image, (width, height))
+        image = pg.transform.scale(image, (width * 1, height * 1))
+        return image
+
+
+
+# ------------------------------ (1) Defining Player1 Class ------------------------------
+class Player1(pg.sprite.Sprite):
+    # initializes Player1
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         #### self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image = game.player_img        # defines image
+        self.image = game.player1_img        # defines image
         #### self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x, self.y = x * TILESIZE, y * TILESIZE        # x & y positioning multiplied by TILESIZE
-        self.speed = 300        # player speed
+        self.speed = 300        # player1 speed
         self.moneybag = 0        # coins collected
         self.hitpoints = 100
         self.material = True
         self.hypotenuse = ''
+
+        # needed for animated sprite
+        self.spritesheet = Spritesheet(path.join(img_folder, Player1_sheet))
+        self.load_images()
+        self.image = self.standing_frames[0]
+        self.current_frame = 0
+        self.last_update = 0
     
-    # get_keys() purpose - moves player based on keys
+    # get_keys() purpose - moves player1 based on keys
     def get_keys(self):
         self.vx, self.vy = 0, 0
         keys = pg.key.get_pressed()        # calls get_pressed() in keys (variable)
         if keys[pg.K_a]:        # if a-key pressed
             self.vx = -self.speed        # x decreases = move left
-            #### print(self.rect.x)
-            #### print(self.rect.y)
         if keys[pg.K_d]:        # if d-key pressed
             self.vx = self.speed        # x increases = move right
         if keys[pg.K_w]:        # if w-key pressed
@@ -48,28 +78,7 @@ class Player(pg.sprite.Sprite):
 
     # collide_with_walls() purpose - prevents sprites from moving through walls
     def collide_with_walls(self, dir):        # dir - direction
-        #### if self.collide_with_group(self.game.power_ups, True):
-        ####     if PowerUp.random_effect(self) == 'ghost':
-        ####         return
-        if self.material == True:
-            if dir == 'x':        # if sprite moving horizontally
-                hits = pg.sprite.spritecollide(self, self.game.walls, False)
-                if hits:
-                    if self.vx > 0:
-                        self.x = hits[0].rect.left - self.rect.width
-                    if self.vx < 0:
-                        self.x = hits[0].rect.right
-                    self.vx = 0
-                    self.rect.x = self.x
-            if dir == 'y':        # if sprite moving vertically
-                hits = pg.sprite.spritecollide(self, self.game.walls, False)
-                if hits:
-                    if self.vy > 0:
-                            self.y = hits[0].rect.top - self.rect.height
-                    if self.vy < 0:
-                        self.y = hits[0].rect.bottom
-                    self.vy = 0
-                    self.rect.y = self.y
+        collide_with_walls(self, dir)
     
     def collide_with_borders(self, dir):
         if dir == 'x':        # if sprite moving horizontally
@@ -101,60 +110,60 @@ class Player(pg.sprite.Sprite):
 
             elif str(hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
                 if random_effect == 'speed':
-                    print('you have collected the speed potion')
                     self.speed += 200        # increase speed by 200
+                    game.draw_text(self.game.screen, 'PowerUp: Speed', 15, WHITE, self.x, self.y)
 
                 elif random_effect == 'ghost':
-                    print('you have collected the ghost potion')
                     self.material = False        # overrides collide_with_walls()
                     self.image = game.ghost_mario_img
+                    self.game.draw_text(self.game.screen, 'PowerUp: Ghost', 15, WHITE, self.x, self.y)
 
                 elif random_effect == '2x coin':
-                    print('you have collected the 2x coin powerup')
                     self.moneybag = self.moneybag * 2        # doubles current moneybag
+                    game.draw_text(self.game.screen, 'PowerUp: 2x Coin', 15, WHITE, self.x, self.y)
 
                 elif random_effect == 'regen':
-                    print('you have collected the regeneration powerup')
                     self.hitpoints += 50
-
+                    game.draw_text(self.game.screen, 'PowerUp: Regen', 15, WHITE, self.x, self.y)
+                    
             elif str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
                 local_coordinates = Teleport.random_teleport(self)        # gets the coordinates of the end portal
-                # makes the players coordinates = the end portal coordinates
+                # makes player1's coordinates = the end portal coordinates
                 self.x, self.y = local_coordinates[0] * TILESIZE, local_coordinates[1] * TILESIZE
                 
             elif str(hits[0].__class__.__name__) == 'Mob':
                 self.hitpoints = self.hitpoints - 1
-            
-            #### if str (hits[0].__class__.__name__) == "Potions":
-            ####     self.speed += 200
     
-    ## old motion
-    # def move(self, dx=0, dy=0):
-    #     self.x += dx
-    #     self.y += dy
+    def load_images(self):
+        self.standing_frames = [self.spritesheet.get_image(0, 0, 32, 32),
+                                self.spritesheet.get_image(32, 0, 32, 32)]
 
-    # def speed_potion(self):
-    #     hits = pg.sprite.spritecollide(self, self.game.speedpotion, False)
-    #     if hits:
-    #         # increase speed
-    #         self.speed = 2
+    def animate(self):
+        now = pg. time.get_ticks()
+        if now - self.last_update > 350:
+            self.last_update = now
+            self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
+            bottom = self.rect.bottom
+            self.image = self.standing_frames[self.current_frame]
+            self.rect = self.image.get_rect()
+            self.rect.bottom = bottom
 
-    # update() purpose - updates player position
+    # update() purpose - updates player1's position
     def update(self):
-        # self.rect.x = self.x
-        # self.rect.y = self.y
+        # needed for animated sprite
+        self.animate()
 
         self.get_keys() # calls get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
         self.rect.x = self.x
-        self.collide_with_walls('x')        # checks if player has collided with a wall horizontally
-        self.collide_with_borders('x')        # checks if player has collided with a border horizontally
+        self.collide_with_walls('x')        # checks if player1 has collided with a wall horizontally
+        self.collide_with_borders('x')        # checks if player1 has collided with a border horizontally
         self.rect.y = self.y
-        self.collide_with_walls('y')        # checks if player has collided with a wall vertically
-        self.collide_with_borders('y')        # checks if player has collided with a border vertically
-        self.collide_with_group(self.game.coins, True, self.game)        # checks if player has collided with a coin
-        self.collide_with_group(self.game.power_ups, True, self.game)        # checks if player has collided with a powerup
+        self.collide_with_walls('y')        # checks if player1 has collided with a wall vertically
+        self.collide_with_borders('y')        # checks if player1 has collided with a border vertically
+        self.collide_with_group(self.game.coins, True, self.game)        # checks if player1 has collided with a coin
+        self.collide_with_group(self.game.power_ups, True, self.game)        # checks if player1 has collided with a powerup
         self.collide_with_group(self.game.teleports, False, self.game)
         self.collide_with_group(self.game.mobs, False, self.game)
 
@@ -163,13 +172,9 @@ class Player(pg.sprite.Sprite):
         
         return self.hitpoints
 
-        #### self.collide_with_group(self.game.potions, True)        # checks if player has collided with a potion
-        # self.rect.x = self.x * TILESIZE
-        # self.rect.y = self.y * TILESIZE
-
         
 
-# ------------------------------ (2) Write a wall class ------------------------------
+# ------------------------------ (2) Defining Wall Class ------------------------------
 class Wall(pg.sprite.Sprite):
     # initializes Wall
     def __init__(self, game, x, y):
@@ -182,49 +187,24 @@ class Wall(pg.sprite.Sprite):
         self.x, self.y = x, y
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
         self.speed = 0
-        
-    # def update(self):
-        # self.rect.x += 1
-        # self.rect.x += TILESIZE * self.speed
-        # self.rect.y += TILESIZE * self.speed
-        # if self.rect.x > WIDTH or self.rect.x < 0:
-        #    self.speed *= -1
-        # if self.rect.y > HEIGHT or self.rect.y < 0:
-        #    self.speed *= -1
 
 
 
-#### ------------------------------ (3) Speed Potion class ------------------------------
-#### class Potions(pg.sprite.Sprite):
-####     def __init__(self, game, x, y):
-####         self.groups = game.all_sprites, game.potions
-####         pg.sprite.Sprite.__init__(self, self.groups)
-####         self.game = game
-####         self.imgage = game.speedpotion_img
-####         self.image = pg.Surface((TILESIZE, TILESIZE))
-####         self.image.fill(RED)
-####         self.rect = self.image.get_rect()
-####         self.x, self.y = x, y
-####         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
-
-
-
-# ------------------------------ (3) Coin class ------------------------------
+# ------------------------------ (3) Defining Coin Class ------------------------------
 class Coin(pg.sprite.Sprite):
     # initializes Coin
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.coins
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(YELLOW)
+        self.image = game.coin_img
         self.rect = self.image.get_rect()
         self.x, self.y = x, y
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
 
 
 
-# ------------------------------ (4) PowerUp class ------------------------------
+# ------------------------------ (4) Defining PowerUp Class ------------------------------
 class PowerUp(pg.sprite.Sprite):
     # initializes PowerUp
     def __init__(self, game, x, y):
@@ -246,7 +226,7 @@ class PowerUp(pg.sprite.Sprite):
 
 
 
-# ------------------------------ (5) Teleport class ------------------------------
+# ------------------------------ (5) Defining Teleport Class ------------------------------
 class Teleport(pg.sprite.Sprite):
     # initializes Teleport
     def __init__(self, game, x, y):
@@ -266,7 +246,7 @@ class Teleport(pg.sprite.Sprite):
 
 
 
-# ------------------------------ (6) Player 2 class ------------------------------
+# ------------------------------ (6) Defining Player2 class ------------------------------
 class Player2(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
@@ -299,10 +279,10 @@ class Player2(pg.sprite.Sprite):
             self.vy = self.speed        # y position increases = move down
 
     def collide_with_walls(self, dir):
-        Player.collide_with_walls(self, dir)
+        Player1.collide_with_walls(self, dir)
     
     def collide_with_borders(self, dir):
-        Player.collide_with_borders(self, dir)
+        Player1.collide_with_borders(self, dir)
 
     def collide_with_group(self, group, kill, game):
         hits = pg.sprite.spritecollide(self, group, kill)
@@ -313,16 +293,18 @@ class Player2(pg.sprite.Sprite):
             
             elif str(hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
                 if random_effect == 'speed':
-                    print('you have collected a speed potion')
                     self.speed += 200        # increase speed by 200
+
                 elif random_effect == 'ghost':
-                    print('you have collected a ghost potion')
                     self.material = False        # overrides collide_with_walls()
                     self.image = game.ghost_luigi_img
+
                 elif random_effect == '2x coin':
-                    print('you have collected a 2x coin powerup')
                     self.moneybag = self.moneybag * 2        # doubles current moneybag
-            
+
+                elif random_effect == 'regen':
+                    self.hitpoints += 50
+
             elif str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
                 local_coordinates = Teleport.random_teleport(self)        # gets the coordinates of the end portal
                 self.x, self.y = local_coordinates[0] * TILESIZE, local_coordinates[1] * TILESIZE
@@ -331,11 +313,22 @@ class Player2(pg.sprite.Sprite):
                 self.hitpoints = self.hitpoints - 1
     
     def update(self):
-        Player.update(self)
+        self.get_keys() # calls get_keys()
+        self.x += self.vx * self.game.dt
+        self.y += self.vy * self.game.dt
+        self.rect.x = self.x
+        self.collide_with_walls('x')        # checks if player1 has collided with a wall horizontally
+        self.collide_with_borders('x')        # checks if player1 has collided with a border horizontally
+        self.rect.y = self.y
+        self.collide_with_walls('y')        # checks if player1 has collided with a wall vertically
+        self.collide_with_borders('y')        # checks if player1 has collided with a border vertically
+        self.collide_with_group(self.game.coins, True, self.game)        # checks if player1 has collided with a coin
+        self.collide_with_group(self.game.power_ups, True, self.game)        # checks if player1 has collided with a powerup
+        self.collide_with_group(self.game.teleports, False, self.game)
+        self.collide_with_group(self.game.mobs, False, self.game)
 
 
-
-# ------------------------------ (7) Mob class ------------------------------
+# ------------------------------ (7) Defining Mob Class ------------------------------
 class Mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.mobs
@@ -353,28 +346,28 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.rot, self.chase_distance = 0, 200
         self.speed, self.hitpoints = 300, 100
-        self.chasing, self.material = True, False
+        self.chasing, self.material = False, False
     
     def sensor(self):
         self.target = ''
-        player_x_dist = self.rect.x - self.game.player.rect.x
+        player1_x_dist = self.rect.x - self.game.player1.rect.x
         player2_x_dist = self.rect.x - self.game.player2.rect.x
-        player_y_dist = self.rect.y - self.game.player.rect.y
+        player1_y_dist = self.rect.y - self.game.player1.rect.y
         player2_y_dist = self.rect.y - self.game.player2.rect.y
         
-        self.game.player.hypotenuse = sqrt(player_x_dist**2 + player_y_dist**2)
+        self.game.player1.hypotenuse = sqrt(player1_x_dist**2 + player1_y_dist**2)
         self.game.player2.hypotenuse = sqrt(player2_x_dist**2 + player2_y_dist**2)
                 
-        if self.game.player.hitpoints > 0 and self.game.player2.hitpoints <= 0:
-            if self.game.player.hypotenuse < self.chase_distance:
+        if self.game.player1.hitpoints > 0 and self.game.player2.hitpoints <= 0:
+            if self.game.player1.hypotenuse < self.chase_distance:
                 self.chasing = True
-                self.target = self.game.player
+                self.target = self.game.player1
                 return self.target
             else:
                 self.chasing = False
                 return self.target
         
-        elif self.game.player.hitpoints <= 0 and self.game.player2.hitpoints > 0:
+        elif self.game.player1.hitpoints <= 0 and self.game.player2.hitpoints > 0:
             if self.game.player2.hypotenuse < self.chase_distance:
                 self.chasing = True
                 self.target = self.game.player2
@@ -383,18 +376,16 @@ class Mob(pg.sprite.Sprite):
                 self.chasing = False
                 return self.target
         
-        #### if abs(self.rect.x - self.game.player.rect.x) < abs(self.rect.x - self.game.player2.rect.x):
-        elif self.game.player.hypotenuse < self.game.player2.hypotenuse:
-            if self.game.player.hypotenuse < self.chase_distance:
+        elif self.game.player1.hypotenuse < self.game.player2.hypotenuse:
+            if self.game.player1.hypotenuse < self.chase_distance:
                 self.chasing = True
-                self.target = self.game.player
+                self.target = self.game.player1
                 return self.target
             else:
                 self.chasing = False
                 return self.target
         
-        #### if abs(self.rect.x - self.game.player.rect.x) > abs(self.rect.x - self.game.player2.rect.x):
-        elif self.game.player2.hypotenuse < self.game.player.hypotenuse:
+        elif self.game.player2.hypotenuse < self.game.player1.hypotenuse:
             if self.game.player2.hypotenuse < self.chase_distance:
                 self.chasing = True
                 self.target = self.game.player2
@@ -402,14 +393,19 @@ class Mob(pg.sprite.Sprite):
             else:
                 self.chasing = False
                 return self.target
+        
+        else:
+            self.chasing = False
+            self.target = 'None'
+            return self.target
     
     def update(self):
         if self.hitpoints <= 0:
             self.kill()
         self.sensor()
-        if self.chasing and self.sensor() != '':
-            if self.sensor() == self.game.player:
-                self.rot = (self.game.player.rect.center - self.pos).angle_to(vec(1, 0))
+        if self.chasing and self.sensor() != 'None':
+            if self.sensor() == self.game.player1:
+                self.rot = (self.game.player1.rect.center - self.pos).angle_to(vec(1, 0))
             elif self.sensor() == self.game.player2:
                 self.rot = (self.game.player2.rect.center - self.pos).angle_to(vec(1, 0))
             self.image = pg.transform.rotate(self.game.mob_img, self.rot)
@@ -425,7 +421,7 @@ class Mob(pg.sprite.Sprite):
 
 
 
-# ------------------------------ (8) Border class ------------------------------
+# ------------------------------ (8) Defining Border Class ------------------------------
 class Border(pg.sprite.Sprite):
     # initializes Border
     def __init__(self, game, x, y):

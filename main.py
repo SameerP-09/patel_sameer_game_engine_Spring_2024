@@ -26,10 +26,14 @@ Game Features
 
 '''
 Feedback
- * Confusion about what PowerUps have been collected
+ - Confusion about what PowerUps have been collected
  * PowerUp cooldowns
  - Confine players to arena
  * End screen
+'''
+
+'''
+Beta goal: PowerUp cooldowns
 '''
 
 '''
@@ -52,8 +56,24 @@ from os import path
 from math import floor
 #### from random import randint
 
-# ------------------------------ Creating Game (class) ------------------------------
-class Cooldown():
+
+
+# ------------------------------ Defining draw_health_bar (func) ------------------------------
+def draw_health_bar(surf, x, y, pct):
+        if pct < 0:
+            pct = 0
+        BAR_LENGTH = 32
+        BAR_HEIGHT = 10
+        fill = (pct / 100) * BAR_LENGTH
+        outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+        fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
+        pg.draw.rect(surf, GREEN, fill_rect)
+        pg.draw.rect(surf, WHITE, outline_rect, 2)
+
+
+
+# ------------------------------ Defining Timer (class) ------------------------------
+class Timer():
     def __init__(self):
         self.current_time = 0
         self.event_time = 0
@@ -75,23 +95,12 @@ class Cooldown():
         self.event_time = floor((pg.time.get_ticks())/1000)
     
     # sets current time
-    def timer(self):
+    def seconds(self):
         self.current_time = floor((pg.time.get_ticks())/1000)
 
 
 
-# ------------------------------ Creating Game (class) ------------------------------
-def draw_health_bar(surf, x, y, pct):
-        if pct < 0:
-            pct = 0
-        BAR_LENGTH = 32
-        BAR_HEIGHT = 10
-        fill = (pct / 100) * BAR_LENGTH
-        outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
-        fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
-        pg.draw.rect(surf, GREEN, fill_rect)
-        pg.draw.rect(surf, WHITE, outline_rect, 2)
-
+# ------------------------------ Defining Game (class) ------------------------------
 class Game:
     # initializes Game
     def __init__(self):
@@ -108,8 +117,9 @@ class Game:
         # loads images
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'images')
-        self.player_img = pg.image.load(path.join(img_folder, 'Mario.png')).convert_alpha()
+        self.player1_img = pg.image.load(path.join(img_folder, 'Mario.png')).convert_alpha()
         self.player2_img = pg.image.load(path.join(img_folder, 'Luigi.png')).convert_alpha()
+        self.coin_img = pg.image.load(path.join(img_folder, 'Coin.png')).convert_alpha()
         self.powerup_img = pg.image.load(path.join(img_folder, 'PowerUp.png')).convert_alpha()
         self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()
         self.mob_img = pg.image.load(path.join(img_folder, 'Mob.png')).convert_alpha()
@@ -126,9 +136,7 @@ class Game:
 
         with open(path.join(game_folder, 'two_player_map.txt'), 'rt') as f:        # opens map.txt from game folder as f
             for line in f:        # evaluates each line in f
-                #### print(line)
                 self.map_data.append(line)        # adds the characters in each line as str to list map_data
-                #### print(self.map_data)
     
     '''
     TypeError: Player.__init__() takes 3 positional arguments but 4 were given
@@ -138,60 +146,38 @@ class Game:
 
     # new() purpose - positions & calls sprites
     def new(self):
-        self.timer = Cooldown()
+        self.timer = Timer()
         self.all_sprites = pg.sprite.Group()        # Group(): class because it is capitalized
         self.walls = pg.sprite.Group()
-        #### self.potions = pg.sprite.Group()
         self.coins = pg.sprite.Group()
         self.power_ups = pg.sprite.Group()
         self.teleports = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.borders = pg.sprite.Group()
-
-        #### self.player = Player(self, 10, 10)
-        #### self.all_sprites.add(self.player)
-        #### for x in range(10, 20):
-        ####     Wall(self, x, 5)
         
         for row, tiles in enumerate(self.map_data):        # enumerate says where a pixel is and what it is
             # print(row)
             for col, tile in enumerate(tiles):
                 print(col)
                 if tile == '0':
-                    # print("a wall at", row, col)
                     Wall(self, col, row)
-                
-                if tile == '1':
-                    self.player = Player(self, col, row)
-                
-                if tile == '2':
+                elif tile == '1':
+                    self.player1 = Player1(self, col, row)
+                elif tile == '2':
                     self.player2 = Player2(self, col, row)
-
-                #### if tile == 's':
-                ####     print ("a speed potion at", row, col)
-                ####     Potions(self, col, row)
-                
-                if tile == 'C':
-                    # print("a coin at", row, col)
+                elif tile == 'C':
                     Coin(self, col, row)
-                
-                if tile == 'U':
-                    # print("a power up at", row, col)
+                elif tile == 'U':
                     PowerUp(self, col, row)
-                
-                if tile == 'T':
+                elif tile == 'T':
                     Teleport(self, col, row)
-                
-                if tile == 'X':
-                    # Teleport(self, col, row)
+                elif tile == 'X':
                     EXIT_PORTS.append([col, row])
-                
-                if tile == 'M':
+                elif tile == 'M':
                     self.mob = Mob(self, col, row)
-
-                if tile == 'B':
+                elif tile == 'B':
                     Border(self, col, row)
-
+    
     # run() purpose - runs and updates game
     def run(self):
         self.playing = True
@@ -225,8 +211,8 @@ class Game:
         # draws vertical lines
         for y in range(0, HEIGHT, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
-    
-    # draw_text() purpose - code to write on window
+
+    # draw_text() purpose - types text on window
     def draw_text(self, surface, text, size, color, x, y):
         font_name = pg.font.match_font('arial')
         font = pg.font.Font(font_name, size)
@@ -241,12 +227,12 @@ class Game:
         self.screen.fill(BGCOLOR)
         self.draw_grid()
         self.all_sprites.draw(self.screen)
-        self.draw_text(self.screen, str(self.player.moneybag), 64, WHITE, 2 * TILESIZE, 1 * TILESIZE)
+        self.draw_text(self.screen, str(self.player1.moneybag), 64, WHITE, 2 * TILESIZE, 1 * TILESIZE)
         self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 31 * TILESIZE, 1 * TILESIZE)
         self.draw_text(self.screen, str(self.timer.time(0)), 24, BLACK, WIDTH/2 - 32, 2)
 
-        if self.player.hitpoints > 0:
-            draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y - 20, self.player.hitpoints)
+        if self.player1.hitpoints > 0:
+            draw_health_bar(self.screen, self.player1.rect.x, self.player1.rect.y - 20, self.player1.hitpoints)
         if self.player2.hitpoints > 0:
             draw_health_bar(self.screen, self.player2.rect.x, self.player2.rect.y - 20, self.player2.hitpoints)
         
@@ -270,17 +256,6 @@ class Game:
 
                 self.quit()
                 print("The game has ended...")
-            
-            # listening for keyboard actions/events
-            #### if event.type == pg.KEYDOWN:
-            ####    if event.key == pg.K_a: # or event.key == pg.K_LEFT:
-            ####        self.player.move(dx=-1)
-            ####     if event.key == pg.K_d: # or event.key == pg.K_RIGHT:
-            ####         self.player.move(dx=1)
-            ####     if event.key == pg.K_s: # or event.key == pg.K_DOWN:
-            ####         self.player.move(dy=1)
-            ####     if event.key == pg.K_w: # or event.key == pg.K_UP:
-            ####         self.player.move(dy=-1)
     
     def show_start_screen(self):
         self.screen.fill(BGCOLOR)
