@@ -327,6 +327,11 @@ class Player2(pg.sprite.Sprite):
         self.collide_with_group(self.game.teleports, False, self.game)
         self.collide_with_group(self.game.mobs, False, self.game)
 
+        if self.hitpoints <= 0:
+            self.kill()
+        
+        return self.hitpoints
+
 
 # ------------------------------ (7) Defining Mob Class ------------------------------
 class Mob(pg.sprite.Sprite):
