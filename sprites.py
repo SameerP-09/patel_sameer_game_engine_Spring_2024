@@ -124,6 +124,9 @@ class Player1(pg.sprite.Sprite):
                 
             elif str(hits[0].__class__.__name__) == 'Mob':
                 self.hitpoints = self.hitpoints - 1
+            
+            elif str(hits[0].__class__.__name__) == 'ShopKeeper':
+                self.game.shop_open = True
     
     def load_images(self):
         self.standing_frames = [self.spritesheet.get_image(0, 0, 32, 32),
@@ -157,6 +160,7 @@ class Player1(pg.sprite.Sprite):
         self.collide_with_group(self.game.power_ups, True, self.game)        # checks if player1 has collided with a powerup
         self.collide_with_group(self.game.teleports, False, self.game)
         self.collide_with_group(self.game.mobs, False, self.game)
+        self.collide_with_group(self.game.shopkeepers, False, self.game)
 
         if self.game.cooldown.cd < 1:
             self.cooling = False
@@ -440,6 +444,21 @@ class Border(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = self.game.border_img
+        self.rect = self.image.get_rect()
+        self.x, self.y = x, y
+        self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
+        self.speed = 0
+
+
+
+# ------------------------------ (9) Defining ShopKeeper Class ------------------------------
+class ShopKeeper(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.shopkeepers
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.x, self.y = x, y
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE

@@ -118,6 +118,7 @@ class Game:
         self.clock = pg.time.Clock()        # Clock(): class because of capitalization (capitalization is a standard)
         pg.key.set_repeat(500, 100)
         self.running = True        # whether the game is running or not
+        self.shop_open = False
         self.load_data()
 
     # load_data() purpose - records game data (scores & positioning)
@@ -163,6 +164,7 @@ class Game:
         self.teleports = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.borders = pg.sprite.Group()
+        self.shopkeepers = pg.sprite.Group()
 
         self.cooldown = Timer(self)
         
@@ -188,6 +190,8 @@ class Game:
                     self.mob = Mob(self, col, row)
                 elif tile == 'B':
                     Border(self, col, row)
+                elif tile == 'S':
+                    ShopKeeper(self, col, row)
         
         self.camera = Camera(self.map.width, self.map.height)
     
@@ -213,7 +217,9 @@ class Game:
     # update() purpose - updates sprite graphics based on code
     def update(self):
         self.cooldown.ticking()
-        self.all_sprites.update()
+        if not self.shop_open:
+            self.all_sprites.update()
+        self.player1.update()
         self.camera.update(self.player1)
     
     # draw_grid() purpose - draws grid/tiles
