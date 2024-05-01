@@ -10,7 +10,7 @@
 '''
 goals, rules, feedback, freedom, what, the verb, and will it form a sentence
 
-Game Features
+Alpha Design: Game Features
  1. random powerups - 4 parts
     a. speed potion powerup
     b. ghost powerup
@@ -18,7 +18,7 @@ Game Features
     d. randomizing powerups
  2. teleporter - 2 parts
     a. create teleporter class
-    b. randomaize end location
+    b. randomize end location
  3. powerup and portal graphics
  4. multiplayer feature
  5. start screen
@@ -34,11 +34,16 @@ Feedback
 
 '''
 Beta goal: PowerUp cooldowns
+
+Beta Design: Game Features
+ 1. mob detects players with a circle radius
+ 2. game borders - impenetrable even with ghost potion
+ 3. scrolling map
 '''
 
 '''
 Sources
-    - Github Repository (start screen): https://github.com/ccozort/cozort_chris_game_engine_Spring_2024
+    - Github Repository (start screen and scrolling map): https://github.com/ccozort/cozort_chris_game_engine_Spring_2024
 '''
 
 # ------------------------------ Importing Libraries/Modules ------------------------------
@@ -75,28 +80,28 @@ def draw_health_bar(surf, x, y, pct):
 
 # ------------------------------ Defining Timer (class) ------------------------------
 class Timer():
-    def __init__(self):
+    # sets all properties to zero when instantiated...
+    def __init__(self, game):
+        self.game = game
         self.current_time = 0
         self.event_time = 0
-        self.delta = 0
+        self.cd = 0
         # ticking ensures the timer is counting...
-    
     # must use ticking to count up or down
     def ticking(self):
         self.current_time = floor((pg.time.get_ticks())/1000)
-        self.delta = self.current_time + self.event_time
-    
+        if self.cd > 0:
+            self.countdown()
     # resets event time to zero - cooldown reset
-    def time(self, x):
-        x = x + self.delta
-        if x != None:
-            return x
-    
-    def event_reset(self):
-        self.event_time = floor((pg.time.get_ticks())/1000)
-    
+    def get_countdown(self):
+        return floor(self.cd)
+    def countdown(self):
+        if self.cd > 0:
+            self.cd = self.cd - self.game.dt
+    # def event_reset(self):
+    #     self.event_time = floor((self.game.clock.)/1000)
     # sets current time
-    def seconds(self):
+    def get_current_time(self):
         self.current_time = floor((pg.time.get_ticks())/1000)
 
 
@@ -149,7 +154,6 @@ class Game:
 
     # new() purpose - positions & calls sprites
     def new(self):
-        self.timer = Timer()
         self.all_sprites = pg.sprite.Group()        # Group(): class because it is capitalized
         self.walls = pg.sprite.Group()
         self.coins = pg.sprite.Group()
@@ -157,6 +161,8 @@ class Game:
         self.teleports = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.borders = pg.sprite.Group()
+
+        self.cooldown = Timer(self)
         
         for row, tiles in enumerate(self.map.data):        # enumerate says where a pixel is and what it is
             # print(row)
@@ -204,7 +210,7 @@ class Game:
 
     # update() purpose - updates sprite graphics based on code
     def update(self):
-        self.timer.ticking()
+        self.cooldown.ticking()
         self.all_sprites.update()
         self.camera.update(self.player1)
     
@@ -237,7 +243,7 @@ class Game:
         # self.all_sprites.draw(self.screen)
         self.draw_text(self.screen, str(self.player1.moneybag), 64, WHITE, 2 * TILESIZE, 1 * TILESIZE)
         # self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 31 * TILESIZE, 1 * TILESIZE)
-        self.draw_text(self.screen, str(self.timer.time(0)), 24, BLACK, WIDTH/2 - 32, 2)
+        self.draw_text(self.screen, str(self.cooldown.get_countdown()), 24, BLACK, WIDTH/2 - 32, 2)
 
         if self.player1.hitpoints > 0:
             draw_health_bar(self.screen, self.player1.rect.x, self.player1.rect.y - 20, self.player1.hitpoints)

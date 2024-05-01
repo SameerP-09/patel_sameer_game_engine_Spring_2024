@@ -21,22 +21,6 @@ img_folder = path.join(game_folder, 'images')
 
 
 
-# ------------------------------ (1) Defining Spritesheet Class ------------------------------
-class Spritesheet:
-    # utility class for loading and parsing spritesheets
-    def __init__(self, filename):
-        self.spritesheet = pg.image.load(filename).convert()
-
-    def get_image(self, x, y, width, height):
-        # grab an image out of a larger spritesheet
-        image = pg.Surface((width, height))
-        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
-        # image = pg.transform.scale(image, (width, height))
-        image = pg.transform.scale(image, (width * 1, height * 1))
-        return image
-
-
-
 # ------------------------------ (1) Defining Player1 Class ------------------------------
 class Player1(pg.sprite.Sprite):
     # initializes Player1
@@ -50,10 +34,12 @@ class Player1(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x, self.y = x * TILESIZE, y * TILESIZE        # x & y positioning multiplied by TILESIZE
+
         self.speed = 300        # player1 speed
         self.moneybag = 0        # coins collected
         self.hitpoints = 100
-        self.material = True
+
+        self.material, self.cooling = True, False
         self.hypotenuse = ''
 
         # needed for animated sprite
@@ -108,7 +94,7 @@ class Player1(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "Coin":        # if entity == Coin
                 self.moneybag += 1        # add 1 to moneybag
 
-            elif str(hits[0].__class__.__name__) == "PowerUp":        # if entity == PowerUp
+            elif str(hits[0].__class__.__name__) == "PowerUp" and self.cooling == False:        # if entity == PowerUp
                 if random_effect == 'speed':
                     self.speed += 100        # increase speed by 200
                     game.draw_text(self.game.screen, 'PowerUp: Speed', 15, WHITE, self.x, self.y)
@@ -125,6 +111,9 @@ class Player1(pg.sprite.Sprite):
                 elif random_effect == 'regen':
                     self.hitpoints += 50
                     game.draw_text(self.game.screen, 'PowerUp: Regen', 15, WHITE, self.x, self.y)
+                
+                self.game.cooldown.cd = 5
+                self.cooling = True
                     
             elif str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
                 local_coordinates = Teleport.random_teleport(self)        # gets the coordinates of the end portal
@@ -166,6 +155,13 @@ class Player1(pg.sprite.Sprite):
         self.collide_with_group(self.game.power_ups, True, self.game)        # checks if player1 has collided with a powerup
         self.collide_with_group(self.game.teleports, False, self.game)
         self.collide_with_group(self.game.mobs, False, self.game)
+
+        if self.game.cooldown.cd < 1:
+            self.cooling = False
+        if self.cooling == False:
+            self.collide_with_group(self.game.power_ups, True, self.game)
+        elif self.cooling == True:
+            self.collide_with_group(self.game.power_ups, False, self.game)
 
         if self.hitpoints <= 0:
             self.kill()
