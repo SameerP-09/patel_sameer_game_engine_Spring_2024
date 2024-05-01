@@ -35,3 +35,14 @@ def collide_with_walls(self, dir):        # dir - direction
                     self.y = hits[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
+
+
+    # draw_text() purpose - types text on window
+def draw_text(surface, text, size, color, x, y):
+    font_name = pg.font.match_font('arial')
+    font = pg.font.Font(font_name, size)
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect()
+    #### text_rect.topleft = (x * TILESIZE, y * TILESIZE)
+    text_rect.midtop = (x, y)
+    surface.blit(text_surface, text_rect)

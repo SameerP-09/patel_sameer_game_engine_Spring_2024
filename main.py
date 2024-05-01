@@ -53,6 +53,7 @@ import pygame as pg
 # can import all items from libraries using: from (library) import *
 from settings import *
 from sprites import *
+from utils import *
 from tilemap import *
 
 import sys
@@ -65,6 +66,7 @@ from math import floor
 
 
 # ------------------------------ Defining draw_health_bar (func) ------------------------------
+# purpose: draw player's health bar
 def draw_health_bar(surf, x, y, pct):
         if pct < 0:
             pct = 0
@@ -112,7 +114,7 @@ class Game:
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))        # WIDTH & HEIGHT imported from settings
-        pg.display.set_caption("My First Video Game")        # titles the game window
+        pg.display.set_caption('My First Video Game')        # titles the game window
         self.clock = pg.time.Clock()        # Clock(): class because of capitalization (capitalization is a standard)
         pg.key.set_repeat(500, 100)
         self.running = True        # whether the game is running or not
@@ -124,13 +126,13 @@ class Game:
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'images')
         self.player1_img = pg.image.load(path.join(img_folder, 'Mario.png')).convert_alpha()
-        self.player2_img = pg.image.load(path.join(img_folder, 'Luigi.png')).convert_alpha()
+        # self.player2_img = pg.image.load(path.join(img_folder, 'Luigi.png')).convert_alpha()
         self.coin_img = pg.image.load(path.join(img_folder, 'Coin.png')).convert_alpha()
         self.powerup_img = pg.image.load(path.join(img_folder, 'PowerUp.png')).convert_alpha()
         self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()
         self.mob_img = pg.image.load(path.join(img_folder, 'Mob.png')).convert_alpha()
         self.ghost_mario_img = pg.image.load(path.join(img_folder, 'Ghost_Mario.png')).convert_alpha()
-        self.ghost_luigi_img = pg.image.load(path.join(img_folder, 'Ghost_luigi.png')).convert_alpha()
+        # self.ghost_luigi_img = pg.image.load(path.join(img_folder, 'Ghost_luigi.png')).convert_alpha()
         self.border_img = pg.image.load(path.join(img_folder, 'Border.png')).convert_alpha()
         
         #self.map_data = []
@@ -146,7 +148,7 @@ class Game:
             #### for line in f:        # evaluates each line in f
                 #### self.map_data.append(line)        # adds the characters in each line as str to list map_data
     
-    '''
+    '''aaaa
     TypeError: Player.__init__() takes 3 positional arguments but 4 were given
     self is a built-in parameter in every method; by having self as a parameter,
     we call self twice
@@ -224,16 +226,6 @@ class Game:
         for y in range(0, HEIGHT, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
 
-    # draw_text() purpose - types text on window
-    def draw_text(self, surface, text, size, color, x, y):
-        font_name = pg.font.match_font('arial')
-        font = pg.font.Font(font_name, size)
-        text_surface = font.render(text, True, color)
-        text_rect = text_surface.get_rect()
-        #### text_rect.topleft = (x * TILESIZE, y * TILESIZE)
-        text_rect.midtop = (x, y)
-        surface.blit(text_surface, text_rect)
-
     # draw() purpose - draws grid and sprites
     def draw(self):
         self.screen.fill(BGCOLOR)
@@ -241,9 +233,9 @@ class Game:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         # self.draw_grid()
         # self.all_sprites.draw(self.screen)
-        self.draw_text(self.screen, str(self.player1.moneybag), 64, WHITE, 2 * TILESIZE, 1 * TILESIZE)
+        draw_text(self.screen, str(self.player1.moneybag), 64, WHITE, 2 * TILESIZE, 1 * TILESIZE)
         # self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 31 * TILESIZE, 1 * TILESIZE)
-        self.draw_text(self.screen, str(self.cooldown.get_countdown()), 24, BLACK, WIDTH/2 - 32, 2)
+        draw_text(self.screen, str(self.cooldown.get_countdown()), 24, BLACK, WIDTH/2 - 32, 2)
 
         if self.player1.hitpoints > 0:
             draw_health_bar(self.screen, self.player1.rect.x, self.player1.rect.y - 20, self.player1.hitpoints)
@@ -269,12 +261,12 @@ class Game:
                 #### self.running = False
 
                 self.quit()
-                print("The game has ended...")
+                print('The game has ended...')
     
     def show_start_screen(self):
         self.screen.fill(BGCOLOR)
-        self.draw_text(self.screen, 'Start Menu: Press any key to play', 50, WHITE, WIDTH/2, HEIGHT/2 - 30)
-        self.draw_text(self.screen, '2 Player Game', 20, WHITE, WIDTH/2, 2 * HEIGHT/3)
+        draw_text(self.screen, 'Start Menu: Press any key to play', 50, WHITE, WIDTH/2, HEIGHT/2 - 30)
+        draw_text(self.screen, '2 Player Game', 20, WHITE, WIDTH/2, 2 * HEIGHT/3)
         pg.display.flip()
         self.wait_for_key()
 

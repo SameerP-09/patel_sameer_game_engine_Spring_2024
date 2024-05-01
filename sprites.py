@@ -37,6 +37,7 @@ class Player1(pg.sprite.Sprite):
 
         self.speed = 300        # player1 speed
         self.moneybag = 0        # coins collected
+        self.coin_multiplier = 1
         self.hitpoints = 100
 
         self.material, self.cooling = True, False
@@ -91,26 +92,27 @@ class Player1(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, group, kill)
         random_effect = PowerUp.random_effect(self)
         if hits:        # if sprite collides with entity
-            if str(hits[0].__class__.__name__) == "Coin":        # if entity == Coin
-                self.moneybag += 1        # add 1 to moneybag
+            if str(hits[0].__class__.__name__) == 'Coin':        # if entity == Coin
+                self.moneybag += self.coin_multiplier        # add 1 to moneybag
 
-            elif str(hits[0].__class__.__name__) == "PowerUp" and self.cooling == False:        # if entity == PowerUp
+            elif str(hits[0].__class__.__name__) == 'PowerUp':        # if entity == PowerUp
                 if random_effect == 'speed':
                     self.speed += 100        # increase speed by 200
-                    game.draw_text(self.game.screen, 'PowerUp: Speed', 15, WHITE, self.x, self.y)
+                    draw_text(self.game.screen, 'PowerUp: Speed', 40, WHITE, self.x, self.y + 20)
 
                 elif random_effect == 'ghost':
                     self.material = False        # overrides collide_with_walls()
                     self.image = game.ghost_mario_img
-                    self.game.draw_text(self.game.screen, 'PowerUp: Ghost', 15, WHITE, self.x, self.y)
+                    draw_text(self.game.screen, 'PowerUp: Ghost', 15, WHITE, self.x, self.y)
 
                 elif random_effect == '2x coin':
-                    self.moneybag = self.moneybag * 2        # doubles current moneybag
-                    game.draw_text(self.game.screen, 'PowerUp: 2x Coin', 15, WHITE, self.x, self.y)
+                    # self.moneybag = self.moneybag * 2        # doubles current moneybag
+                    self.coin_multiplier *= 2
+                    draw_text(self.game.screen, 'PowerUp: 2x Coin', 15, WHITE, self.x, self.y)
 
                 elif random_effect == 'regen':
                     self.hitpoints += 50
-                    game.draw_text(self.game.screen, 'PowerUp: Regen', 15, WHITE, self.x, self.y)
+                    draw_text(self.game.screen, 'PowerUp: Regen', 15, WHITE, self.x, self.y)
                 
                 self.game.cooldown.cd = 5
                 self.cooling = True
@@ -345,8 +347,8 @@ class Mob(pg.sprite.Sprite):
         self.vel, self.acc = vec(0, 0), vec(0, 0)
 
         self.rect.center = self.pos
-        self.rot, self.chase_distance = 0, 200
-        self.speed, self.hitpoints = 300, 100
+        self.rot, self.chase_distance = 0, 350
+        self.speed, self.hitpoints = 400, 100
         self.chasing, self.material = False, False
     
     def sensor(self):
