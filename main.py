@@ -48,6 +48,7 @@ import pygame as pg
 # can import all items from libraries using: from (library) import *
 from settings import *
 from sprites import *
+from tilemap import *
 
 import sys
 
@@ -126,7 +127,9 @@ class Game:
         self.ghost_mario_img = pg.image.load(path.join(img_folder, 'Ghost_Mario.png')).convert_alpha()
         self.ghost_luigi_img = pg.image.load(path.join(img_folder, 'Ghost_luigi.png')).convert_alpha()
         self.border_img = pg.image.load(path.join(img_folder, 'Border.png')).convert_alpha()
-        self.map_data = []
+        
+        #self.map_data = []
+        self.map = Map(path.join(game_folder, 'single_player_map.txt'))
 
         '''
         The with statement is a context manager in Python. 
@@ -134,9 +137,9 @@ class Game:
         after it is used. This can help to prevent errors and leaks.
         '''
 
-        with open(path.join(game_folder, 'two_player_map.txt'), 'rt') as f:        # opens map.txt from game folder as f
-            for line in f:        # evaluates each line in f
-                self.map_data.append(line)        # adds the characters in each line as str to list map_data
+        #### with open(path.join(game_folder, 'two_player_map.txt'), 'rt') as f:        # opens map.txt from game folder as f
+            #### for line in f:        # evaluates each line in f
+                #### self.map_data.append(line)        # adds the characters in each line as str to list map_data
     
     '''
     TypeError: Player.__init__() takes 3 positional arguments but 4 were given
@@ -155,7 +158,7 @@ class Game:
         self.mobs = pg.sprite.Group()
         self.borders = pg.sprite.Group()
         
-        for row, tiles in enumerate(self.map_data):        # enumerate says where a pixel is and what it is
+        for row, tiles in enumerate(self.map.data):        # enumerate says where a pixel is and what it is
             # print(row)
             for col, tile in enumerate(tiles):
                 print(col)
@@ -163,8 +166,8 @@ class Game:
                     Wall(self, col, row)
                 elif tile == '1':
                     self.player1 = Player1(self, col, row)
-                elif tile == '2':
-                    self.player2 = Player2(self, col, row)
+                # elif tile == '2':
+                    # self.player2 = Player2(self, col, row)
                 elif tile == 'C':
                     Coin(self, col, row)
                 elif tile == 'U':
@@ -177,6 +180,8 @@ class Game:
                     self.mob = Mob(self, col, row)
                 elif tile == 'B':
                     Border(self, col, row)
+        
+        self.camera = Camera(self.map.width, self.map.height)
     
     # run() purpose - runs and updates game
     def run(self):
@@ -201,6 +206,7 @@ class Game:
     def update(self):
         self.timer.ticking()
         self.all_sprites.update()
+        self.camera.update(self.player1)
     
     # draw_grid() purpose - draws grid/tiles
     def draw_grid(self):
@@ -225,16 +231,18 @@ class Game:
     # draw() purpose - draws grid and sprites
     def draw(self):
         self.screen.fill(BGCOLOR)
-        self.draw_grid()
-        self.all_sprites.draw(self.screen)
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
+        # self.draw_grid()
+        # self.all_sprites.draw(self.screen)
         self.draw_text(self.screen, str(self.player1.moneybag), 64, WHITE, 2 * TILESIZE, 1 * TILESIZE)
-        self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 31 * TILESIZE, 1 * TILESIZE)
+        # self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 31 * TILESIZE, 1 * TILESIZE)
         self.draw_text(self.screen, str(self.timer.time(0)), 24, BLACK, WIDTH/2 - 32, 2)
 
         if self.player1.hitpoints > 0:
             draw_health_bar(self.screen, self.player1.rect.x, self.player1.rect.y - 20, self.player1.hitpoints)
-        if self.player2.hitpoints > 0:
-            draw_health_bar(self.screen, self.player2.rect.x, self.player2.rect.y - 20, self.player2.hitpoints)
+        # if self.player2.hitpoints > 0:
+        #     draw_health_bar(self.screen, self.player2.rect.x, self.player2.rect.y - 20, self.player2.hitpoints)
         
         pg.display.flip()
     
