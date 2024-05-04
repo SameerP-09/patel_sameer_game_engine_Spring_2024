@@ -68,15 +68,15 @@ from math import floor
 # ------------------------------ Defining draw_health_bar (func) ------------------------------
 # purpose: draw player's health bar
 def draw_health_bar(surf, x, y, pct):
-        if pct < 0:
-            pct = 0
-        BAR_LENGTH = 32
-        BAR_HEIGHT = 10
-        fill = (pct / 100) * BAR_LENGTH
-        outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
-        fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
-        pg.draw.rect(surf, GREEN, fill_rect)
-        pg.draw.rect(surf, WHITE, outline_rect, 2)
+    if pct < 0:
+        pct = 0
+    BAR_LENGTH = 32
+    BAR_HEIGHT = 10
+    fill = (pct / 100) * BAR_LENGTH
+    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
+    pg.draw.rect(surf, GREEN, fill_rect)
+    pg.draw.rect(surf, WHITE, outline_rect, 2)
 
 
 
@@ -216,11 +216,12 @@ class Game:
 
     # update() purpose - updates sprite graphics based on code
     def update(self):
-        self.cooldown.ticking()
         if not self.shop_open:
             self.all_sprites.update()
-        self.player1.update()
-        self.camera.update(self.player1)
+            self.camera.update(self.player1)
+            self.cooldown.ticking()
+        else:
+            self.show_shop_screen()
     
     # draw_grid() purpose - draws grid/tiles
     def draw_grid(self):
@@ -278,6 +279,13 @@ class Game:
 
     def show_go_screen(self):
         pass
+
+    def show_shop_screen(self):
+        self.screen.fill(WHITE)
+        draw_text(self.screen, 'Shopkeeper', 50, BLACK, WIDTH/2, HEIGHT/2 - 30)
+        pg.display.flip()
+        self.wait_for_shop_key()
+        self.shop_open = False
     
     def wait_for_key(self):
         waiting = True
@@ -290,6 +298,15 @@ class Game:
                     waiting = False
                     self.quit()
                 if event.type == pg.KEYUP:
+                    waiting = False
+    
+    def wait_for_shop_key(self):
+        waiting = True
+        key = pg.key.get_pressed()
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.K_ESCAPE:
                     waiting = False
 
 
