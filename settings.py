@@ -40,6 +40,7 @@ PLAYER_SPEED = 300
 #### P1_HP = 100
 #### P2_HP = 100
 
-EXIT_PORTS = []        # list tracking locations of end portals
+MOB_HIT_RECT = pg.Rect(0, 0, 96, 96)
 
-MOB_HIT_RECT = pg.Rect(0,0,96,96)
+EXIT_PORTS = []        # list tracking locations of end portals
+SPAWN = []

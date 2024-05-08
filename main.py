@@ -176,6 +176,9 @@ class Game:
                     Wall(self, col, row)
                 elif tile == '1':
                     self.player1 = Player1(self, col, row)
+                    SPAWN.append(col)
+                    SPAWN.append(row)
+                    # self.player1.spawn = [row, col]
                 # elif tile == '2':
                     # self.player2 = Player2(self, col, row)
                 elif tile == 'C':
@@ -190,7 +193,7 @@ class Game:
                     self.mob = Mob(self, col, row)
                 elif tile == 'B':
                     Border(self, col, row)
-                elif tile == 'S':
+                elif tile == 'K':
                     ShopKeeper(self, col, row)
         
         self.camera = Camera(self.map.width, self.map.height)
@@ -285,14 +288,15 @@ class Game:
         draw_text(self.screen, 'Shopkeeper', 50, BLACK, WIDTH/2, HEIGHT/2 - 30)
         pg.display.flip()
         self.wait_for_shop_key()
-        self.shop_open = False
+
+    '''
+    Error: shop screen doesn't close because player is still in contact with shopkeeper
+    '''
     
     def wait_for_key(self):
         waiting = True
-        key = pg.key.get_pressed()
         while waiting:
             self.clock.tick(FPS)
-            #### print(1)        # used this to debug
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     waiting = False
@@ -302,12 +306,17 @@ class Game:
     
     def wait_for_shop_key(self):
         waiting = True
-        key = pg.key.get_pressed()
         while waiting:
+            key = pg.key.get_pressed()
             self.clock.tick(FPS)
             for event in pg.event.get():
-                if event.type == pg.K_ESCAPE:
+                if event.type == pg.QUIT:
                     waiting = False
+                    self.quit()
+            if key[pg.K_ESCAPE]:
+                waiting = False
+        self.shop_open = False
+        self.player1.x, self.player1.y = SPAWN[0] * TILESIZE, SPAWN[1] * TILESIZE
 
 
 
