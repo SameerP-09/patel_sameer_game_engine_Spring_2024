@@ -65,21 +65,6 @@ from math import floor
 
 
 
-# ------------------------------ Defining draw_health_bar (func) ------------------------------
-# purpose: draw player's health bar
-def draw_health_bar(surf, x, y, pct):
-    if pct < 0:
-        pct = 0
-    BAR_LENGTH = 32
-    BAR_HEIGHT = 10
-    fill = (pct / 100) * BAR_LENGTH
-    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
-    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
-    pg.draw.rect(surf, GREEN, fill_rect)
-    pg.draw.rect(surf, WHITE, outline_rect, 2)
-
-
-
 # ------------------------------ Defining Timer (class) ------------------------------
 class Timer():
     # sets all properties to zero when instantiated...
@@ -315,6 +300,8 @@ class Game:
                     self.quit()
             if key[pg.K_ESCAPE]:
                 waiting = False
+            if key[pg.K_s]:
+                pass
         self.shop_open = False
         self.player1.x, self.player1.y = SPAWN[0] * TILESIZE, SPAWN[1] * TILESIZE
 
