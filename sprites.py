@@ -82,8 +82,7 @@ class Player1(pg.sprite.Sprite):
             elif str(hits[0].__class__.__name__) == 'PowerUp':        # if entity == PowerUp
                 if random_effect == 'speed':
                     self.speed += 100        # increase speed by 200
-                    
-
+                
                 elif random_effect == 'ghost':
                     self.material = False        # overrides collide_with_walls()
                     self.image = self.game.ghost_mario_img
@@ -227,7 +226,7 @@ class Teleport(pg.sprite.Sprite):
 
 
 
-# ------------------------------ (7) Defining Mob Class ------------------------------
+# ------------------------------ (6) Defining Mob Class ------------------------------
 class Mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.mobs
@@ -283,7 +282,7 @@ class Mob(pg.sprite.Sprite):
 
 
 
-# ------------------------------ (8) Defining Border Class ------------------------------
+# ------------------------------ (7) Defining Border Class ------------------------------
 class Border(pg.sprite.Sprite):
     # initializes Border
     def __init__(self, game, x, y):
@@ -298,7 +297,7 @@ class Border(pg.sprite.Sprite):
 
 
 
-# ------------------------------ (9) Defining ShopKeeper Class ------------------------------
+# ------------------------------ (8) Defining ShopKeeper Class ------------------------------
 class ShopKeeper(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.shopkeepers

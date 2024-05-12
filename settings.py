@@ -21,17 +21,17 @@ FPS = 30
 # ------------------------------ Colors ------------------------------
 # All colors are tuples; tuple: a collection which is ordered and unchangeable
 # (red, green, blue)
+
 BLACK = (0, 0, 0)        # red, green, and blue are min
 WHITE = (255, 255, 255)        # red, green, and blue are max
-
 BGCOLOR = (0, 0, 0)
 
 RED = (255, 0, 0)        # In RGB, red is 1st
 GREEN = (0, 255, 0)        # In RGB, green is 2nd
 BLUE = (0, 0, 255)        # In RGB, blue is 3rd
-
 YELLOW = (255, 255, 0)        # yellow - combination of red and green
 LIGHTGREY = (217, 217, 214)        # light grey - combination of white and black
+PURPLE = (128, 0, 128)
 
 
 

@@ -112,13 +112,11 @@ class Game:
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'images')
         self.player1_img = pg.image.load(path.join(img_folder, 'Mario.png')).convert_alpha()
-        # self.player2_img = pg.image.load(path.join(img_folder, 'Luigi.png')).convert_alpha()
         self.coin_img = pg.image.load(path.join(img_folder, 'Coin.png')).convert_alpha()
         self.powerup_img = pg.image.load(path.join(img_folder, 'PowerUp.png')).convert_alpha()
         self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()
         self.mob_img = pg.image.load(path.join(img_folder, 'Mob.png')).convert_alpha()
         self.ghost_mario_img = pg.image.load(path.join(img_folder, 'Ghost_Mario.png')).convert_alpha()
-        # self.ghost_luigi_img = pg.image.load(path.join(img_folder, 'Ghost_luigi.png')).convert_alpha()
         self.border_img = pg.image.load(path.join(img_folder, 'Border.png')).convert_alpha()
         
         #self.map_data = []
@@ -226,17 +224,13 @@ class Game:
         self.screen.fill(BGCOLOR)
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
-        # self.draw_grid()
-        # self.all_sprites.draw(self.screen)
+
         draw_text(self.screen, str(self.player1.moneybag), 64, WHITE, 2 * TILESIZE, 1 * TILESIZE)
-        # self.draw_text(self.screen, str(self.player2.moneybag), 64, WHITE, 31 * TILESIZE, 1 * TILESIZE)
         draw_text(self.screen, str(self.cooldown.get_countdown()), 24, BLACK, WIDTH/2 - 32, 2)
 
         if self.player1.hitpoints > 0:
             draw_health_bar(self.screen, self.player1.rect.x, self.player1.rect.y - 20, self.player1.hitpoints)
-        # if self.player2.hitpoints > 0:
-        #     draw_health_bar(self.screen, self.player2.rect.x, self.player2.rect.y - 20, self.player2.hitpoints)
-        
+
         pg.display.flip()
     
     # events() purpose - calls quit to close window
@@ -269,8 +263,20 @@ class Game:
         pass
 
     def show_shop_screen(self):
-        self.screen.fill(WHITE)
-        draw_text(self.screen, 'Shopkeeper', 50, BLACK, WIDTH/2, HEIGHT/2 - 30)
+        self.screen.fill(BLACK)
+        draw_text(self.screen, 'Shop Menu', 50, GREEN, WIDTH/8 + 20, 2 * HEIGHT/16)
+
+        draw_text(self.screen, 'Balance: ' + str(self.player1.moneybag), 25, WHITE, WIDTH/6, 4 * HEIGHT/12)
+        draw_text(self.screen, 'Speed: ' + str(self.player1.speed), 25, WHITE, 2 * WIDTH/6, 4 * HEIGHT/12)
+        draw_text(self.screen, 'Ghost: ' + str(not self.player1.material), 25, WHITE, 3 * WIDTH/6, 4 * HEIGHT/12)
+        draw_text(self.screen, 'Coin multiplier: ' + str(self.player1.coin_multiplier), 25, WHITE, 4 * WIDTH/6, 4 * HEIGHT/12)
+        draw_text(self.screen, 'Health: ' + str(self.player1.hitpoints), 25, WHITE, 5 * WIDTH/6, 4 * HEIGHT/12)
+
+        draw_text(self.screen, 'Speed Potion', 50, RED, WIDTH/4 + 20, 8 * HEIGHT/16 + 20)
+        draw_text(self.screen, 'Ghost Potion', 50, PURPLE, 3 * WIDTH/4 - 20, 8 * HEIGHT/16 + 20)
+        draw_text(self.screen, 'Coin Multiplier', 50, YELLOW, WIDTH/4 + 20, 12 * HEIGHT/16 - 20)
+        draw_text(self.screen, 'Regen Potion', 50, BLUE, 3 * WIDTH/4 - 20, 12 * HEIGHT/16 - 20)
+
         pg.display.flip()
         self.wait_for_shop_key()
 
@@ -292,6 +298,7 @@ class Game:
     def wait_for_shop_key(self):
         waiting = True
         while waiting:
+            self.draw_grid(50)
             key = pg.key.get_pressed()
             self.clock.tick(FPS)
             for event in pg.event.get():
@@ -300,8 +307,19 @@ class Game:
                     self.quit()
             if key[pg.K_ESCAPE]:
                 waiting = False
-            if key[pg.K_s]:
-                pass
+            elif key[pg.K_s] and self.player1.moneybag >= 20:
+                self.player1.speed += 25
+                self.player1.moneybag -= 20
+            elif key[pg.K_g] and self.player1.moneybag >= 20:
+                self.player1.material = False
+                self.player1.moneybag -= 20
+            elif key[pg.K_c] and self.player1.moneybag >= 20:
+                self.player1.coin_multiplier += 1
+                self.player1.moneybag -= 20
+            elif key[pg.K_r] and self.player1.moneybag >= 20:
+                self.player1.hitpoints += 25
+                self.player1.moneybag -= 20
+                
         self.shop_open = False
         self.player1.x, self.player1.y = SPAWN[0] * TILESIZE, SPAWN[1] * TILESIZE
 
