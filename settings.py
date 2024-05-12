@@ -31,6 +31,7 @@ GREEN = (0, 255, 0)        # In RGB, green is 2nd
 BLUE = (0, 0, 255)        # In RGB, blue is 3rd
 YELLOW = (255, 255, 0)        # yellow - combination of red and green
 LIGHTGREY = (217, 217, 214)        # light grey - combination of white and black
+DARKGREY = (64, 64, 64)
 PURPLE = (128, 0, 128)
 
 
