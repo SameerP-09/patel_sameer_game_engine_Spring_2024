@@ -341,6 +341,9 @@ class Shop(pg.sprite.Sprite):
                 if event.type == pg.QUIT:
                     waiting = False
                     self.game.quit()
+            
+            if self.game.player1.moneybag < self.price:
+                self.text_color = RED
 
             if pg.mouse.get_pressed()[0] and self.game.player1.moneybag >= self.price:
                 self.mouse_pos = pg.mouse.get_pos()
@@ -357,7 +360,7 @@ class Shop(pg.sprite.Sprite):
                     self.game.player1.hitpoints += 25
                     self.game.player1.moneybag += -self.price
                     
-            elif key[pg.K_ESCAPE]:
+            if key[pg.K_ESCAPE]:
                 waiting = False
             
             self.update()
