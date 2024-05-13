@@ -47,7 +47,7 @@ def collide_with_walls(self, dir, entity):        # dir - direction
 # ------------------------------ Defining draw_text (func) ------------------------------
 # draw_text() purpose - types text on window
 def draw_text(surface, text, size, position, color, x, y):
-    font_name = pg.font.match_font('arial')
+    font_name = pg.font.match_font('times new roman')
     font = pg.font.Font(font_name, size)
     text_surface = font.render(text, True, color)
     text_rect = text_surface.get_rect()

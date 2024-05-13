@@ -40,7 +40,7 @@ class Player1(pg.sprite.Sprite):
         self.coin_multiplier = 1
         self.hitpoints = 100
 
-        self.material, self.cooling = True, False
+        self.ghost, self.cooling = False, False
         self.hypotenuse = ''
 
         # needed for animated sprite
@@ -65,7 +65,7 @@ class Player1(pg.sprite.Sprite):
 
     # collide_with_walls() purpose - prevents sprites from moving through walls
     def collide_with_walls(self, dir):        # dir - direction
-        if self.material == True:
+        if self.ghost == False:
             collide_with_walls(self, dir, self.game.walls)
     
     def collide_with_borders(self, dir):
@@ -84,7 +84,7 @@ class Player1(pg.sprite.Sprite):
                     self.speed += 100        # increase speed by 200
                 
                 elif random_effect == 'ghost':
-                    self.material = False        # overrides collide_with_walls()
+                    self.ghost = True        # overrides collide_with_walls()
                     self.image = self.game.ghost_mario_img
 
                 elif random_effect == '2x coin':
@@ -244,7 +244,7 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.rot, self.chase_distance = 0, 350
         self.speed, self.hitpoints = 400, 100
-        self.chasing, self.material = False, False
+        self.chasing = False
     
     def sensor(self):
         self.target = ''
