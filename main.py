@@ -208,7 +208,7 @@ class Game:
             self.camera.update(self.player1)
             self.cooldown.ticking()
         else:
-            Shop(self)
+            Shop(self).__init__(self)
     
     # draw_grid() purpose - draws grid/tiles
     def draw_grid(self):
@@ -226,8 +226,8 @@ class Game:
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
 
-        draw_text(self.screen, str(self.player1.moneybag), 64, WHITE, 2 * TILESIZE, 1 * TILESIZE)
-        draw_text(self.screen, str(self.cooldown.get_countdown()), 24, BLACK, WIDTH/2 - 32, 2)
+        draw_text(self.screen, str(self.player1.moneybag), 64, 'midtop', WHITE, 2 * TILESIZE, 1 * TILESIZE)
+        draw_text(self.screen, str(self.cooldown.get_countdown()), 24, 'midtop', BLACK, WIDTH/2 - 32, 2)
 
         if self.player1.hitpoints > 0:
             draw_health_bar(self.screen, self.player1.rect.x, self.player1.rect.y - 20, self.player1.hitpoints)
@@ -255,8 +255,8 @@ class Game:
     
     def show_start_screen(self):
         self.screen.fill(BGCOLOR)
-        draw_text(self.screen, 'Start Menu: Press any key to play', 50, WHITE, WIDTH/2, HEIGHT/2 - 30)
-        draw_text(self.screen, '2 Player Game', 20, WHITE, WIDTH/2, 2 * HEIGHT/3)
+        draw_text(self.screen, 'Start Menu: Press any key to play', 50, 'midtop', WHITE, WIDTH/2, HEIGHT/2 - 30)
+        draw_text(self.screen, '2 Player Game', 20, 'midtop', WHITE, WIDTH/2, 2 * HEIGHT/3)
         pg.display.flip()
         self.wait_for_key()
     
@@ -283,60 +283,65 @@ class Shop(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.screen = self.game.screen
-        self.mx, self.my = pg.mouse.get_pos()
         self.tilesize = (WIDTH/4, HEIGHT/16)
+        self.step_x, self.step_y = WIDTH/5 - 20, HEIGHT/16
+        self.price = 1
 
         self.screen.fill(BLACK)
+        self.wait_for_shop_key()
+
+    def display(self):
+        draw_text(self.screen, 'Shop Menu', 50, 'midtop', GREEN, self.step_x, 2 * HEIGHT/16)
 
         font = pg.font.Font(None, 36)
         text_surface1 = font.render('Speed Potion', False, GREEN)
-        self.text_tile1 = text_surface1.get_rect(topleft = (WIDTH/4 - 20, 8 * HEIGHT/16 + 20))
+        self.text_tile1 = text_surface1.get_rect(topleft = (self.step_x, 8 * self.step_y))
         self.tile1 = pg.Surface(self.tilesize)
         self.tile1.fill(DARKGREY)
-        self.screen.blit(self.tile1, (WIDTH/4 - 20, 8 * HEIGHT/16 + 20))
+        self.screen.blit(self.tile1, (self.step_x, 8 * self.step_y))
         self.screen.blit(text_surface1, self.text_tile1)
 
         text_surface2 = font.render('Ghost Potion', False, GREEN)
-        self.text_tile2 = text_surface2.get_rect(topleft = (3 * WIDTH/4 - 20, 8 * HEIGHT/16 + 20))
+        self.text_tile2 = text_surface2.get_rect(topleft = (3 * self.step_x, 8 * self.step_y))
         self.tile2 = pg.Surface(self.tilesize)
         self.tile2.fill(DARKGREY)
-        self.screen.blit(self.tile2, (3 * WIDTH/4 - 20, 8 * HEIGHT/16 + 20))
+        self.screen.blit(self.tile2, (3 * self.step_x, 8 * self.step_y))
         self.screen.blit(text_surface2, self.text_tile2)
 
         text_surface3 = font.render('2x Coin Potion', False, GREEN)
-        self.text_tile3 = text_surface3.get_rect(topleft = (WIDTH/4 - 20, 12 * HEIGHT/16 - 20))
+        self.text_tile3 = text_surface3.get_rect(topleft = (self.step_x, 12 * self.step_y))
         self.tile3 = pg.Surface(self.tilesize)
         self.tile3.fill(DARKGREY)
-        self.screen.blit(self.tile3, (WIDTH/4 - 20, 12 * HEIGHT/16 - 20))
+        self.screen.blit(self.tile3, (self.step_x, 12 * self.step_y))
         self.screen.blit(text_surface3, self.text_tile3)
 
         text_surface4 = font.render('Regen Potion', False, GREEN)
-        self.text_tile4 = text_surface4.get_rect(topleft = (3 * WIDTH/4 - 20, 12 * HEIGHT/16 - 20))
+        self.text_tile4 = text_surface4.get_rect(topleft = (3 * self.step_x, 12 * self.step_y))
         self.tile4 = pg.Surface(self.tilesize)
         self.tile4.fill(DARKGREY)
-        self.screen.blit(self.tile4, (3 * WIDTH/4 - 20, 12 * HEIGHT/16 - 20))
+        self.screen.blit(self.tile4, (3 * self.step_x, 12 * self.step_y))
         self.screen.blit(text_surface4, self.text_tile4)
 
-        # self.tile3 = pg.Surface(self.tilesize)
-        # self.tile3.fill(LIGHTGREY)
-        # self.rect3 = self.tile3.get_rect()
-        # self.screen.blit(self.tile3, (WIDTH/4 + 20, 12 * HEIGHT/16 - 20))
+        # self.color = GREEN
+        # draw_text(self.screen, 'Regen Potion', 50, 'topleft', self.color, 3 * self.step_x, 12 * self.step_y)
         
-        draw_text(self.screen, 'Shop Menu', 50, GREEN, WIDTH/8 + 20, 2 * HEIGHT/16)
+        moneybag_stat = self.game.player1.moneybag
+        draw_text(self.screen, 'Balance: ' + str(moneybag_stat), 25, 'midtop', WHITE, WIDTH/6, 4 * HEIGHT/12)
 
-        draw_text(self.screen, 'Balance: ' + str(self.game.player1.moneybag), 25, WHITE, WIDTH/6, 4 * HEIGHT/12)
-        draw_text(self.screen, 'Speed: ' + str(self.game.player1.speed), 25, WHITE, 2 * WIDTH/6, 4 * HEIGHT/12)
-        draw_text(self.screen, 'Ghost: ' + str(not self.game.player1.material), 25, WHITE, 3 * WIDTH/6, 4 * HEIGHT/12)
-        draw_text(self.screen, 'Coin multiplier: ' + str(self.game.player1.coin_multiplier), 25, WHITE, 4 * WIDTH/6, 4 * HEIGHT/12)
-        draw_text(self.screen, 'Health: ' + str(self.game.player1.hitpoints), 25, WHITE, 5 * WIDTH/6, 4 * HEIGHT/12)
+        speed_stat = self.game.player1.speed
+        draw_text(self.screen, 'Speed: ' + str(speed_stat), 25, 'midtop', WHITE, 2 * WIDTH/6, 4 * HEIGHT/12)
 
-        # draw_text(self.screen, 'Speed Potion', 50, RED, WIDTH/4 + 20, 8 * HEIGHT/16 + 20)
-        # draw_text(self.screen, 'Ghost Potion', 50, PURPLE, 3 * WIDTH/4 - 20, 8 * HEIGHT/16 + 20)
-        # draw_text(self.screen, 'Coin Multiplier', 50, YELLOW, WIDTH/4 + 20, 12 * HEIGHT/16 - 20)
-        # draw_text(self.screen, 'Regen Potion', 50, BLUE, 3 * WIDTH/4 - 20, 12 * HEIGHT/16 - 20)
+        material_stat = self.game.player1.material
+        draw_text(self.screen, 'Ghost: ' + str(not material_stat), 25, 'midtop', WHITE, 3 * WIDTH/6, 4 * HEIGHT/12)
+
+        multiplier_stat = self.game.player1.coin_multiplier
+        draw_text(self.screen, 'Coin multiplier: ' + str(multiplier_stat), 25, 'midtop', WHITE, 4 * WIDTH/6, 4 * HEIGHT/12)
+
+        hitpoints_stat = self.game.player1.hitpoints
+        draw_text(self.screen, 'Health: ' + str(hitpoints_stat), 25, 'midtop', WHITE, 5 * WIDTH/6, 4 * HEIGHT/12)
 
         pg.display.flip()
-        self.wait_for_shop_key()
+        # self.wait_for_shop_key()
     
     def wait_for_shop_key(self):
         waiting = True
@@ -346,43 +351,36 @@ class Shop(pg.sprite.Sprite):
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     waiting = False
-                    self.quit()
+                    self.game.quit()
 
-            if pg.mouse.get_pressed() and self.game.player1.moneybag >= 20:
-                if 0 < self.mx < WIDTH/4 + 20 and 0 < self.my < 8 * HEIGHT/16 + 20:
-                    self.game.player1.speed += 25
-                    self.game.player1.moneybag -= 20
-                elif 3 * WIDTH/4 - 20 < self.mx < WIDTH and 0 < self.my < 8 * HEIGHT/16 + 20:
-                    self.game.player1.material = False
-                    self.game.player1.moneybag -= 20
-                elif 0 < self.mx < WIDTH/4 + 20 and 8 * HEIGHT/16 + 20 < self.my < 12 * HEIGHT/16 - 20:
-                    self.game.player1.coin_multiplier += 1
-                    self.game.player1.moneybag -= 20
-                elif 3 * WIDTH/4 - 20 < self.my < WIDTH and HEIGHT/16 + 20 < self.my < 12 * HEIGHT/16 - 20:
-                    self.game.player1.hitpoints += 25
-                    self.game.player1.moneybag -= 20
+            if pg.mouse.get_pressed() and self.game.player1.moneybag >= self.price:
+                self.mx, self.my = pg.mouse.get_pos()
+                if self.step_x < self.mx < self.step_x + self.tilesize[0]:
+                    if self.step_y < self.my < 8 * self.step_y + self.tilesize[1]:
+                        self.game.player1.speed += 100
+                        self.game.player1.moneybag += -self.price
+                    elif 8 * self.step_y < self.my < 12 * self.step_y + self.tilesize[1]:
+                        self.game.player1.coin_multiplier += 1
+                        self.game.player1.moneybag += -self.price
+                elif 3 * self.step_x < self.mx < self.step_x + self.tilesize[0]:
+                    if self.step_y < self.my < 8 * self.step_y + self.tilesize[1]:
+                        self.game.player1.material = False
+                        self.game.player1.material += -self.price
+                    elif 8 * self.step_y < self.my < 12 * self.step_y + self.tilesize[1]:
+                        self.game.player1.hitpoints += 25
+                        self.game.player1.moneybag += -self.price
                     
             if key[pg.K_ESCAPE]:
                 waiting = False
             
-            # elif key[pg.K_s] and self.player1.moneybag >= 20:
-            #     self.player1.speed += 25
-            #     self.player1.moneybag -= 20
-            # elif key[pg.K_g] and self.player1.moneybag >= 20:
-            #     self.player1.material = False
-            #     self.player1.moneybag -= 20
-            # elif key[pg.K_c] and self.player1.moneybag >= 20:
-            #     self.player1.coin_multiplier += 1
-            #     self.player1.moneybag -= 20
-            # elif key[pg.K_r] and self.player1.moneybag >= 20:
-            #     self.player1.hitpoints += 25
-            #     self.player1.moneybag -= 20
+            self.update()
                 
         self.game.shop_open = False
         self.game.player1.x, self.game.player1.y = SPAWN[0] * TILESIZE, SPAWN[1] * TILESIZE
     
     def update(self):
-        pass
+        self.screen.fill(BLACK)
+        self.display()
 
 
 

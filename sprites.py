@@ -89,7 +89,7 @@ class Player1(pg.sprite.Sprite):
 
                 elif random_effect == '2x coin':
                     # self.moneybag = self.moneybag * 2        # doubles current moneybag
-                    self.coin_multiplier *= 2
+                    self.coin_multiplier += 1
 
                 elif random_effect == 'regen':
                     self.hitpoints += 50

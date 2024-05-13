@@ -46,13 +46,16 @@ def collide_with_walls(self, dir, entity):        # dir - direction
 
 # ------------------------------ Defining draw_text (func) ------------------------------
 # draw_text() purpose - types text on window
-def draw_text(surface, text, size, color, x, y):
+def draw_text(surface, text, size, position, color, x, y):
     font_name = pg.font.match_font('arial')
     font = pg.font.Font(font_name, size)
     text_surface = font.render(text, True, color)
     text_rect = text_surface.get_rect()
     #### text_rect.topleft = (x * TILESIZE, y * TILESIZE)
-    text_rect.midtop = (x, y)
+    if position == 'midtop':
+        text_rect.midtop = (x, y)
+    elif position == 'topleft':
+        text_rect.topleft = (x, y)
     surface.blit(text_surface, text_rect)
 
 
