@@ -60,6 +60,11 @@ class Player1(pg.sprite.Sprite):
             self.vy = -self.speed        # y decreases = move up (y starts at row 0 from top)
         if keys[pg.K_s]:        # if s-key pressed
             self.vy = self.speed        # y increases = move down
+        if keys[pg.K_SPACE]:
+            self.shoot()
+    
+    def shoot(self):
+        round = Bullet(self.game, self.rect.x, self.rect.y)
 
     # collide_with_walls() purpose - prevents sprites from moving through walls
     def collide_with_walls(self, dir):        # dir - direction
@@ -253,7 +258,7 @@ class Mob(pg.sprite.Sprite):
 
         self.rect.center = self.pos
         self.rot, self.chase_distance = 0, 350
-        self.speed, self.hitpoints = 400, 100
+        self.speed = 400
         self.chasing = False
     
     def sensor(self):
@@ -272,16 +277,17 @@ class Mob(pg.sprite.Sprite):
             self.target = 'None'
             return self.target
     
-    def collide_with_borders(self, dir):
-        collide_with_walls(self, dir, self.game.borders)
-    
+    def collide_with_group(self, group, kill):
+        hits = pg.sprite.spritecollide(self, group, kill)
+        if hits:
+            if str(hits[0].__class__.__name__) == 'Bullet':
+                self.kill()
+
     def update(self):
-        if self.hitpoints <= 0:
-            self.kill()
         self.sensor()
-        if self.chasing and self.sensor() != 'None':
-            if self.sensor() == self.game.player1:
-                self.rot = (self.game.player1.rect.center - self.pos).angle_to(vec(1, 0))
+
+        if self.chasing and self.sensor() == self.game.player1:
+            self.rot = (self.game.player1.rect.center - self.pos).angle_to(vec(1, 0))
             self.image = pg.transform.rotate(self.game.mob_img, self.rot)
             self.rect = self.image.get_rect()
             self.rect.center = self.pos
@@ -292,6 +298,8 @@ class Mob(pg.sprite.Sprite):
             self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
             # hit_rect used to account for adjusting the square collision when image rotates
             #### self.rect.center = self.hit_rect.center
+        
+        self.collide_with_group(self.game.bullets, True)
 
 
 
@@ -322,3 +330,34 @@ class ShopKeeper(pg.sprite.Sprite):
         self.x, self.y = x, y
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
         self.speed = 0
+
+
+
+# ------------------------------ (9) Defining Bullet Class ------------------------------
+class Bullet(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.bullets
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface ((TILESIZE/4, TILESIZE/4))
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect()
+        self.x, self.y = x, y
+        self.rect.x, self.rect.y = x, y
+        self.speed = 10
+    
+    def collide_with_group(self, group, kill):
+        hits = pg.sprite.spritecollide(self, group, kill)
+        if hits:
+            if str(hits[0].__class__.__name__) == 'Mob':
+                self.kill()
+            elif str(hits[0].__class__.__name__) == 'Wall':
+                self.kill()
+            elif str(hits[0].__class__.__name__) == 'Border':
+                self.kill()
+
+    def update(self):
+        self.collide_with_group(self.game.mobs, False)
+        self.collide_with_group(self.game.walls, False)
+        self.collide_with_group(self.game.borders, False)
+        self.rect.y -= self.speed

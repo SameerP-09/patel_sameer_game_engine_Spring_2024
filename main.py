@@ -149,6 +149,7 @@ class Game:
         self.borders = pg.sprite.Group()
         self.shopkeepers = pg.sprite.Group()
         self.shop = pg.sprite.Group()
+        self.bullets = pg.sprite.Group()
 
         self.cooldown = Timer(self)
         
