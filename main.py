@@ -287,7 +287,7 @@ class Shop(pg.sprite.Sprite):
         self.tilesize = (WIDTH/4, HEIGHT/16)
         self.step_x, self.step_y = WIDTH/5, HEIGHT/16
         self.tile_color = DARKGREY
-        self.price, self.time = 1, False
+        self.price, self.time = 3, False
 
         self.speed_button = pg.Rect(self.step_x, 8 * self.step_y, self.tilesize[0], self.tilesize[1])
         self.speed_txtcolor = GREEN
@@ -301,10 +301,18 @@ class Shop(pg.sprite.Sprite):
         self.regen_button = pg.Rect(3 * self.step_x, 12 * self.step_y, self.tilesize[0], self.tilesize[1])
         self.regen_txtcolor = GREEN
 
-        self.screen.fill(BLACK)
-        self.wait_for_shop_key()
+        self.ammo_button = pg.Rect(3 * self.step_x, 12 * self.step_y, self.tilesize[0], self.tilesize[1])
+        self.ammo_txtcolor = GREEN
 
-    def display(self):
+        self.round_button = pg.Rect(3 * self.step_x, 12 * self.step_y, self.tilesize[0], self.tilesize[1])
+        self.round_txtcolor = GREEN
+
+        self.screen.fill(BLACK)
+        self.can_purchase()
+        self.current_display = self.shop_display()
+        self.wait_for_shop_key()
+    
+    def shop_display(self):
         draw_text(self.screen, 'Shop Menu', 50, 'midtop', GREEN, self.step_x, 2 * HEIGHT/16)
 
         self.tile1 = pg.Surface(self.tilesize)
@@ -343,77 +351,98 @@ class Shop(pg.sprite.Sprite):
         draw_text(self.screen, 'Health: ' + str(hitpoints_stat), 25, 'midtop', WHITE, 5 * WIDTH/6, 4 * HEIGHT/12)
 
         pg.display.flip()
-    
+
+    def weapons_display(self):
+        draw_text(self.screen, 'Weapon Upgrades', 50, 'midtop', GREEN, self.step_x, 2 * HEIGHT/16)
+
+        self.tile1 = pg.Surface(self.tilesize)
+        self.tile1.fill(self.tile_color)
+        self.screen.blit(self.tile1, (self.step_x, 8 * self.step_y))
+        draw_text(self.screen, 'More Ammo', 35, 'topleft', self.ammo_txtcolor, self.step_x, 8 * self.step_y)
+
+        self.tile2 = pg.Surface(self.tilesize)
+        self.tile2.fill(self.tile_color)
+        self.screen.blit(self.tile2, (3 * self.step_x, 8 * self.step_y))
+        draw_text(self.screen, 'Round Upgrade', 35, 'topleft', self.round_txtcolor, 3 * self.step_x, 8 * self.step_y)
+
+        moneybag_stat = self.game.player1.moneybag
+        draw_text(self.screen, 'Balance: ' + str(moneybag_stat), 25, 'midtop', WHITE, WIDTH/6, 4 * HEIGHT/12)
+
+        ammo_stat = self.game.player1.ammo
+        draw_text(self.screen, 'Ammunition: ' + str(ammo_stat), 25, 'midtop', WHITE, 3 * WIDTH/6, 4 * HEIGHT/12)
+
+        round_stat = self.game.player1.round
+        draw_text(self.screen, 'Round: ' + str(round_stat), 25, 'midtop', WHITE, 5 * WIDTH/6, 4 * HEIGHT/12)
+
+        pg.display.flip()
+
+    def can_purchase(self):
+        if self.game.player1.moneybag < self.price:
+            self.speed_txtcolor, self.ghost_txtcolor, self.twox_coin_txtcolor, self.regen_txtcolor, self.ammo_txtcolor, self.round_txtcolor = RED, RED, RED, RED, RED, RED
+        if self.game.player1.speed == self.game.player1.speed_max:
+            self.speed_txtcolor = RED
+        if self.game.player1.ghost == True:
+            self.ghost_txtcolor = RED
+        if self.game.player1.coin_multiplier >= self.game.player1.mult_max:
+            self.twox_coin_txtcolor = RED
+        if self.game.player1.hitpoints >= self.game.player1.health_max:
+            self.regen_txtcolor = RED
+        if self.game.player1.ammo >= self.game.player1.round:
+            self.ammo_txtcolor = RED
+        if self.game.player1.round >= self.game.player1.round_max:
+            self.round_txtcolor = RED
+
     def wait_for_shop_key(self):
         waiting = True
         while waiting:
+            self.can_purchase()
             key = pg.key.get_pressed()
             self.game.clock.tick(FPS)
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     waiting = False
                     self.game.quit()
-                
+
                 elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                     if pg.mouse.get_pressed()[0] and self.game.player1.moneybag >= self.price:
                         self.mouse_pos = pg.mouse.get_pos()
                         if self.speed_button.collidepoint(self.mouse_pos) and self.speed_txtcolor != RED:
-                            if self.game.player1.speed + 100 > self.game.player1.speed_max:
-                                self.game.player1.speed = self.game.player1.speed_max
-                            else:
-                                self.game.player1.speed += 100
+                            self.game.player1.speed += 100
                             self.game.player1.moneybag += -self.price
-                            if self.game.player1.speed == self.game.player1.speed_max:
-                                self.speed_txtcolor = RED
                         elif self.ghost_button.collidepoint(self.mouse_pos) and self.ghost_txtcolor != RED:
                             self.game.player1.ghost = True
                             self.game.player1.moneybag += -self.price
-                            if self.game.player1.ghost == True:
-                                self.ghost_txtcolor = RED
                         elif self.twox_coin_button.collidepoint(self.mouse_pos) and self.twox_coin_txtcolor != RED:
-                            if self.game.player1.coin_multiplier + 1 > self.game.player1.mult_max:
-                                self.game.player1.coin_multiplier = self.game.player1.mult_max
-                            else:
-                                self.game.player1.coin_multiplier += 1
+                            self.game.player1.coin_multiplier += 1
                             self.game.player1.moneybag += -self.price
-                            if self.game.player1.coin_multiplier == self.game.player1.mult_max:
-                                self.twox_coin_txtcolor = RED
                         elif self.regen_button.collidepoint(self.mouse_pos) and self.regen_txtcolor != RED:
                             if self.game.player1.hitpoints + 25 > self.game.player1.health_max:
                                 self.game.player1.hitpoints = self.game.player1.health_max
                             else:
                                 self.game.player1.hitpoints += 25
-                            self.game.player1.moneybag += -self.price
-                            if self.game.player1.hitpoints == self.game.player1.health_max:
-                                self.regen_txtcolor = RED
+                                self.game.player1.moneybag += -self.price
+                        elif self.ammo_button.collidepoint(self.mouse_pos) and self.ammo_txtcolor != RED:
+                            self.game.player1.ammo = 20
+                            self.game.player1.moneybag -= self.price
+                        elif self.round_button.collidepoint(self.mouse_pos) and self.round_txtcolor != RED:
+                            self.game.player1.round += 10
+                            self.game.player1.moneybag -= self.price
+                        
+                if key[pg.K_ESCAPE]:
+                    waiting = False
+                if key[pg.K_s]:
+                    self.current_display = self.weapons_display()
+                if key[pg.K_w]:
+                    self.current_display = self.shop_display()
 
-            
-            if self.game.player1.moneybag < self.price:
-                self.speed_txtcolor, self.ghost_txtcolor, self.twox_coin_txtcolor, self.regen_txtcolor = RED, RED, RED, RED
-            
-            if self.game.player1.speed == self.game.player1.speed_max:
-                self.speed_txtcolor = RED
-
-            if self.game.player1.ghost == True:
-                self.ghost_txtcolor = RED
-            
-            if self.game.player1.coin_multiplier >= self.game.player1.mult_max:
-                self.twox_coin_txtcolor = RED
-            
-            if self.game.player1.hitpoints >= self.game.player1.health_max:
-                self.regen_txtcolor = RED
-                    
-            if key[pg.K_ESCAPE]:
-                waiting = False
-            
-            self.update()
+                self.update()
                 
         self.game.shop_open = False
         self.game.player1.x, self.game.player1.y = SPAWN[0] * TILESIZE, SPAWN[1] * TILESIZE
     
     def update(self):
         self.screen.fill(BLACK)
-        self.display()
+        self.current_display
 
 
 

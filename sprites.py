@@ -37,7 +37,7 @@ class Player1(pg.sprite.Sprite):
         self.moneybag = 0        # coins collected
         self.coin_multiplier, self.mult_max = 1, 5
         self.hitpoints, self.health_max = 100, 100
-        self.ammo, self.ammo_max = 20, 20
+        self.ammo, self.round, self.round_max = 20, 20, 50
 
         self.ghost, self.cooling = False, False
         self.hypotenuse = ''
@@ -67,7 +67,7 @@ class Player1(pg.sprite.Sprite):
                 self.ammo -= 1
     
     def shoot(self):
-        round = Bullet(self.game, self.rect.x, self.rect.y)
+        shot = Bullet(self.game, self.rect.x, self.rect.y)
 
     # collide_with_walls() purpose - prevents sprites from moving through walls
     def collide_with_walls(self, dir):        # dir - direction
@@ -99,7 +99,7 @@ class Player1(pg.sprite.Sprite):
                     self.coin_multiplier += 1
                     draw_text(self.game.screen, 'You have collected a 2x coin potion', 25, 'midtop', WHITE, WIDTH/2, HEIGHT/3)
 
-                elif random_effect == 'regen' and self.hitpoints < self.health_max:
+                elif random_effect == 'regen' and self.hitpoints +25 <= self.health_max:
                     self.hitpoints += 25
                     draw_text(self.game.screen, 'You have collected a health potion', 25, 'midtop', WHITE, WIDTH/2, HEIGHT/3)
                 
@@ -217,8 +217,6 @@ class PowerUp(pg.sprite.Sprite):
             effects.remove('ghost')
         if self.coin_multiplier == self.mult_max:
             effects.remove('2x coin')
-        if self.game.player1.hitpoints == self.game.player1.health_max:
-            effects.remove('regen')
 
         local_effect = effects[random.randrange(0, len(effects))]
         return local_effect
