@@ -44,6 +44,7 @@ Beta Design: Game Features
 '''
 Sources
     - Github Repository (start screen and scrolling map): https://github.com/ccozort/cozort_chris_game_engine_Spring_2024
+    - ChatGPT - helped me understand and use screen.blit() and collidepoint() to create shop
 '''
 
 # ------------------------------ Importing Libraries/Modules ------------------------------
@@ -354,6 +355,7 @@ class Shop(pg.sprite.Sprite):
     def weapons_display(self):
         draw_text(self.screen, 'Weapon Upgrades', 50, 'midtop', GREEN, self.step_x, 2 * HEIGHT/16)
 
+        # ---------- modified from ChatGPT ----------
         self.tile1 = pg.Surface(self.tilesize)
         self.tile1.fill(self.tile_color)
         self.screen.blit(self.tile1, (self.step_x, 8 * self.step_y))
@@ -363,6 +365,8 @@ class Shop(pg.sprite.Sprite):
         self.tile2.fill(self.tile_color)
         self.screen.blit(self.tile2, (3 * self.step_x, 8 * self.step_y))
         draw_text(self.screen, 'Round Upgrade', 35, 'topleft', self.round_txtcolor, 3 * self.step_x, 8 * self.step_y)
+
+        # -------------------------------------------
 
         moneybag_stat = self.game.player1.moneybag
         draw_text(self.screen, 'Balance: ' + str(moneybag_stat), 25, 'midtop', WHITE, WIDTH/6, 4 * HEIGHT/12)
@@ -402,31 +406,37 @@ class Shop(pg.sprite.Sprite):
                     waiting = False
                     self.game.quit()
 
+                # ---------- modified from ChatGPT ----------
                 elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                     if pg.mouse.get_pressed()[0] and self.game.player1.moneybag >= self.price:
                         self.mouse_pos = pg.mouse.get_pos()
-                        if self.speed_button.collidepoint(self.mouse_pos) and self.speed_txtcolor != RED:
-                            self.game.player1.speed += 100
-                            self.game.player1.moneybag += -self.price
-                        elif self.ghost_button.collidepoint(self.mouse_pos) and self.ghost_txtcolor != RED:
-                            self.game.player1.ghost = True
-                            self.game.player1.moneybag += -self.price
-                        elif self.twox_coin_button.collidepoint(self.mouse_pos) and self.twox_coin_txtcolor != RED:
-                            self.game.player1.coin_multiplier += 1
-                            self.game.player1.moneybag += -self.price
-                        elif self.regen_button.collidepoint(self.mouse_pos) and self.regen_txtcolor != RED:
-                            if self.game.player1.hitpoints + 25 > self.game.player1.health_max:
-                                self.game.player1.hitpoints = self.game.player1.health_max
-                            else:
-                                self.game.player1.hitpoints += 25
+                        if self.current_display == 'powerups':
+                            if self.speed_button.collidepoint(self.mouse_pos) and self.game.player1.speed < self.game.player1.speed_max:
+                                self.game.player1.speed += 100
                                 self.game.player1.moneybag += -self.price
-                        elif self.ammo_button.collidepoint(self.mouse_pos) and self.ammo_txtcolor != RED:
-                            self.game.player1.ammo = self.game.player1.round
-                            self.game.player1.moneybag += -self.price
-                        elif self.round_button.collidepoint(self.mouse_pos) and self.round_txtcolor != RED:
-                            self.game.player1.round += 10
-                            self.game.player1.moneybag += -self.price
-                        
+                            elif self.ghost_button.collidepoint(self.mouse_pos) and self.game.player1.ghost != True:
+                                self.game.player1.ghost = True
+                                self.game.player1.moneybag += -self.price
+                            elif self.twox_coin_button.collidepoint(self.mouse_pos) and self.game.player1.coin_multiplier < self.game.player1.mult_max:
+                                self.game.player1.coin_multiplier += 1
+                                self.game.player1.moneybag += -self.price
+                            elif self.regen_button.collidepoint(self.mouse_pos) and self.game.player1.hitpoints < self.game.player1.health_max:
+                                if self.game.player1.hitpoints + 25 > self.game.player1.health_max:
+                                    self.game.player1.hitpoints = self.game.player1.health_max
+                                else:
+                                    self.game.player1.hitpoints += 25
+                                    self.game.player1.moneybag += -self.price
+                        elif self.current_display == 'weapons':
+                            if self.ammo_button.collidepoint(self.mouse_pos) and self.game.player1.ammo <= self.game.player1.round:
+                                self.game.player1.ammo = self.game.player1.round
+                                self.game.player1.moneybag += -self.price
+                            elif self.round_button.collidepoint(self.mouse_pos) and self.game.player1.round < self.game.player1.round_max:
+                                self.game.player1.round += 10
+                                self.game.player1.moneybag += -self.price
+                                self.ammo_txtcolor = GREEN
+                
+                # -------------------------------------------
+
                 if key[pg.K_ESCAPE]:
                     waiting = False
                 if key[pg.K_s]:
