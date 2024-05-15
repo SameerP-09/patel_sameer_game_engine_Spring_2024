@@ -116,6 +116,7 @@ class Game:
         self.wall_img = pg.image.load(path.join(img_folder, 'Wall.png')).convert_alpha()
         self.coin_img = pg.image.load(path.join(img_folder, 'Coin.png')).convert_alpha()
         self.powerup_img = pg.image.load(path.join(img_folder, 'PowerUp.png')).convert_alpha()
+        self.powerdown_img = pg.image.load(path.join(img_folder, 'PowerDown.png')).convert_alpha()
         self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()
         self.mob_img = pg.image.load(path.join(img_folder, 'Mob.png')).convert_alpha()
         self.ghost_mario_img = pg.image.load(path.join(img_folder, 'Ghost_Mario.png')).convert_alpha()
@@ -146,6 +147,7 @@ class Game:
         self.walls = pg.sprite.Group()
         self.coins = pg.sprite.Group()
         self.power_ups = pg.sprite.Group()
+        self.power_downs = pg.sprite.Group()
         self.teleports = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.borders = pg.sprite.Group()
@@ -179,6 +181,8 @@ class Game:
                     Border(self, col, row)
                 elif tile == 'K':
                     ShopKeeper(self, col, row)
+                elif tile == 'D':
+                    PowerDown(self, col, row)
         
         self.camera = Camera(self.map.width, self.map.height)
     
@@ -230,7 +234,7 @@ class Game:
         draw_text(self.screen, str(self.cooldown.get_countdown()), 24, 'midtop', BLACK, WIDTH/2 - 32, 2)
 
         if self.player1.hitpoints > 0:
-            draw_health_bar(self.screen, self.player1.rect.x, self.player1.rect.y - 20, self.player1.hitpoints)
+            draw_health_bar(self.screen, WIDTH - (7 * TILESIZE), 11 * TILESIZE/4, self.player1.hitpoints)
 
         pg.display.flip()
     

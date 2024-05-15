@@ -49,18 +49,21 @@ class Player1(pg.sprite.Sprite):
         self.image = self.standing_frames[0]
         self.current_frame = 0
         self.last_update = 0
+
+        self.forward, self.backward = pg.K_w, pg.K_s
+        self.right, self.left = pg.K_d, pg.K_a
     
     # get_keys() purpose - moves player1 based on keys
     def get_keys(self):
         self.vx, self.vy = 0, 0
         keys = pg.key.get_pressed()        # calls get_pressed() in keys (variable)
-        if keys[pg.K_a]:        # if a-key pressed
+        if keys[self.left]:        # if a-key pressed
             self.vx = -self.speed        # x decreases = move left
-        if keys[pg.K_d]:        # if d-key pressed
+        if keys[self.right]:        # if d-key pressed
             self.vx = self.speed        # x increases = move right
-        if keys[pg.K_w]:        # if w-key pressed
+        if keys[self.forward]:        # if w-key pressed
             self.vy = -self.speed        # y decreases = move up (y starts at row 0 from top)
-        if keys[pg.K_s]:        # if s-key pressed
+        if keys[self.backward]:        # if s-key pressed
             self.vy = self.speed        # y increases = move down
         if keys[pg.K_SPACE]:
             if self.ammo > 0:
@@ -81,31 +84,50 @@ class Player1(pg.sprite.Sprite):
     # collide_with_group() purpose - calculates data such as coins/powerups
     def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
-        random_effect = PowerUp.random_effect(self)
+        random_power_up = PowerUp.random_effect(self)
+        random_power_down = PowerUp.random_effect(self)
         if hits:        # if sprite collides with entity
             if str(hits[0].__class__.__name__) == 'Coin':        # if entity == Coin
                 self.moneybag += self.coin_multiplier        # add 1 to moneybag
 
             elif str(hits[0].__class__.__name__) == 'PowerUp':        # if entity == PowerUp
-                if random_effect == 'speed':
+                if random_power_up == 'speed':
                     self.speed += 100        # increase speed by 200
-                    draw_text(self.game.screen, 'You have collected a speed potion', 25, 'midtop', WHITE, WIDTH/2, HEIGHT/3)
                 
-                elif random_effect == 'ghost':
+                elif random_power_up == 'ghost':
                     self.ghost = True        # overrides collide_with_walls()
                     self.image = self.game.ghost_mario_img
-                    draw_text(self.game.screen, 'You have collected a ghost potion', 25, 'midtop', WHITE, WIDTH/2, HEIGHT/3)
 
-                elif random_effect == '2x coin':    
+                elif random_power_up == '2x coin':    
                     self.coin_multiplier += 1
-                    draw_text(self.game.screen, 'You have collected a 2x coin potion', 25, 'midtop', WHITE, WIDTH/2, HEIGHT/3)
 
-                elif random_effect == 'regen' and self.hitpoints +25 <= self.health_max:
+                elif random_power_up == 'regen' and self.hitpoints +25 <= self.health_max:
                     self.hitpoints += 25
-                    draw_text(self.game.screen, 'You have collected a health potion', 25, 'midtop', WHITE, WIDTH/2, HEIGHT/3)
                 
                 self.game.cooldown.cd = 5
                 self.cooling = True
+            
+            elif str(hits[0].__class__.__name__) == 'PowerDown':        # if entity == PowerUp
+                if random_power_down == 'speed':
+                    self.speed = self.speed / 2
+                
+                elif random_power_down == 'ghost':
+                    self.ghost = False
+
+                elif random_power_down == '2x coin':    
+                    self.coin_multiplier -= 1
+
+                elif random_power_down == 'degen' and self.hitpoints +25 <= self.health_max:
+                    self.hitpoints = self.hitpoints / 2
+                
+                elif random_power_down == 'invert keys':
+                    self.forward = pg.K_s
+                    self.backward = pg.K_w
+                    self.right = pg.K_a
+                    self.left = pg.K_d
+                
+                elif random_power_down == 'tax':
+                    self.moneybag = self.moneybag // 2
                     
             elif str(hits[0].__class__.__name__) == 'Teleport':       # if entity == Teleport
                 local_coordinates = Teleport.random_teleport(self)        # gets the coordinates of the end portal
@@ -151,6 +173,7 @@ class Player1(pg.sprite.Sprite):
 
         self.collide_with_group(self.game.coins, True)        # checks if player1 has collided with a coin
         self.collide_with_group(self.game.power_ups, True)        # checks if player1 has collided with a powerup
+        self.collide_with_group(self.game.power_downs, True)
         self.collide_with_group(self.game.teleports, False)
         self.collide_with_group(self.game.mobs, False)
         self.collide_with_group(self.game.shopkeepers, False)
@@ -362,3 +385,27 @@ class Bullet(pg.sprite.Sprite):
         self.collide_with_group(self.game.walls, False)
         self.collide_with_group(self.game.borders, False)
         self.rect.x -= self.speed
+
+
+
+# ------------------------------ (4) Defining PowerUp Class ------------------------------
+class PowerDown(pg.sprite.Sprite):
+    # initializes PowerUp
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.power_downs
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = game.powerdown_img
+        self.rect = self.image.get_rect()
+        self.x, self.y = x, y
+        self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
+    
+    def random_effect(self):
+        effects = ['speed', 'ghost', '2x coin', 'degen', 'invert keys', 'tax']
+        if self.game.player1.speed == 100:
+            effects.remove('speed')
+        if self.game.player1.ghost == False:
+            effects.remove('ghost')
+
+        local_effect = effects[random.randrange(0, len(effects))]
+        return local_effect

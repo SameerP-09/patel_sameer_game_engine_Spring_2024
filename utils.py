@@ -65,8 +65,8 @@ def draw_text(surface, text, size, position, color, x, y):
 def draw_health_bar(surf, x, y, pct):
     if pct < 0:
         pct = 0
-    BAR_LENGTH = 32
-    BAR_HEIGHT = 10
+    BAR_LENGTH = 5 * TILESIZE
+    BAR_HEIGHT = 3 * TILESIZE/4
     fill = (pct / 100) * BAR_LENGTH
     outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
     fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
