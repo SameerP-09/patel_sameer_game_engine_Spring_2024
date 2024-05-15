@@ -313,7 +313,7 @@ class Shop(pg.sprite.Sprite):
         self.wait_for_shop_key()
     
     def shop_display(self):
-        draw_text(self.screen, 'Shop Menu', 50, 'midtop', GREEN, self.step_x, 2 * HEIGHT/16)
+        draw_text(self.screen, 'PowerUp Menu', 50, 'midtop', GREEN, self.step_x, 2 * HEIGHT/16)
 
         self.tile1 = pg.Surface(self.tilesize)
         self.tile1.fill(self.tile_color)
@@ -442,7 +442,6 @@ class Shop(pg.sprite.Sprite):
     
     def update(self):
         self.screen.fill(BLACK)
-        self.current_display
 
 
 
