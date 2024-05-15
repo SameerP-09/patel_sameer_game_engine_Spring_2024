@@ -28,17 +28,15 @@ class Player1(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        #### self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image = game.player1_img        # defines image
-        #### self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x, self.y = x * TILESIZE, y * TILESIZE        # x & y positioning multiplied by TILESIZE
 
-        self.speed = 300        # player1 speed
+        self.speed, self.speed_max = 300, 800        # player1 speed
         self.moneybag = 0        # coins collected
-        self.coin_multiplier = 1
-        self.hitpoints = 100
+        self.coin_multiplier, self.mult_max = 1, 5
+        self.hitpoints, self.health_max = 100, 100
 
         self.ghost, self.cooling = False, False
         self.hypotenuse = ''
@@ -82,17 +80,20 @@ class Player1(pg.sprite.Sprite):
             elif str(hits[0].__class__.__name__) == 'PowerUp':        # if entity == PowerUp
                 if random_effect == 'speed':
                     self.speed += 100        # increase speed by 200
+                    draw_text(self.game.screen, 'You have collected a speed potion', 25, 'midtop', WHITE, WIDTH/2, HEIGHT/3)
                 
                 elif random_effect == 'ghost':
                     self.ghost = True        # overrides collide_with_walls()
                     self.image = self.game.ghost_mario_img
+                    draw_text(self.game.screen, 'You have collected a ghost potion', 25, 'midtop', WHITE, WIDTH/2, HEIGHT/3)
 
-                elif random_effect == '2x coin':
-                    # self.moneybag = self.moneybag * 2        # doubles current moneybag
+                elif random_effect == '2x coin':    
                     self.coin_multiplier += 1
+                    draw_text(self.game.screen, 'You have collected a 2x coin potion', 25, 'midtop', WHITE, WIDTH/2, HEIGHT/3)
 
-                elif random_effect == 'regen':
-                    self.hitpoints += 50
+                elif random_effect == 'regen' and self.hitpoints < self.health_max:
+                    self.hitpoints += 25
+                    draw_text(self.game.screen, 'You have collected a health potion', 25, 'midtop', WHITE, WIDTH/2, HEIGHT/3)
                 
                 self.game.cooldown.cd = 5
                 self.cooling = True
@@ -202,6 +203,15 @@ class PowerUp(pg.sprite.Sprite):
     
     def random_effect(self):
         effects = ['speed', 'ghost', '2x coin', 'regen']
+        if self.game.player1.speed == self.game.player1.speed_max:
+            effects.remove('speed')
+        if self.game.player1.ghost == True:
+            effects.remove('ghost')
+        if self.coin_multiplier == self.mult_max:
+            effects.remove('2x coin')
+        if self.game.player1.hitpoints == self.game.player1.health_max:
+            effects.remove('regen')
+
         local_effect = effects[random.randrange(0, len(effects))]
         return local_effect
 
@@ -261,6 +271,9 @@ class Mob(pg.sprite.Sprite):
             self.chasing = False
             self.target = 'None'
             return self.target
+    
+    def collide_with_borders(self, dir):
+        collide_with_walls(self, dir, self.game.borders)
     
     def update(self):
         if self.hitpoints <= 0:
