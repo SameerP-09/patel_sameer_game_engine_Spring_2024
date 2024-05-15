@@ -112,6 +112,7 @@ class Game:
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'images')
         self.player1_img = pg.image.load(path.join(img_folder, 'Mario.png')).convert_alpha()
+        self.wall_img = pg.image.load(path.join(img_folder, 'Wall.png')).convert_alpha()
         self.coin_img = pg.image.load(path.join(img_folder, 'Coin.png')).convert_alpha()
         self.powerup_img = pg.image.load(path.join(img_folder, 'PowerUp.png')).convert_alpha()
         self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()
@@ -163,9 +164,6 @@ class Game:
                     self.player1 = Player1(self, col, row)
                     SPAWN.append(col)
                     SPAWN.append(row)
-                    # self.player1.spawn = [row, col]
-                # elif tile == '2':
-                    # self.player2 = Player2(self, col, row)
                 elif tile == 'C':
                     Coin(self, col, row)
                 elif tile == 'U':
@@ -301,15 +299,16 @@ class Shop(pg.sprite.Sprite):
         self.regen_button = pg.Rect(3 * self.step_x, 12 * self.step_y, self.tilesize[0], self.tilesize[1])
         self.regen_txtcolor = GREEN
 
-        self.ammo_button = pg.Rect(3 * self.step_x, 12 * self.step_y, self.tilesize[0], self.tilesize[1])
+        self.ammo_button = pg.Rect(self.step_x, 8 * self.step_y, self.tilesize[0], self.tilesize[1])
         self.ammo_txtcolor = GREEN
 
-        self.round_button = pg.Rect(3 * self.step_x, 12 * self.step_y, self.tilesize[0], self.tilesize[1])
+        self.round_button = pg.Rect(3 * self.step_x, 8 * self.step_y, self.tilesize[0], self.tilesize[1])
         self.round_txtcolor = GREEN
 
         self.screen.fill(BLACK)
         self.can_purchase()
-        self.current_display = self.shop_display()
+        self.current_display = 'powerups'
+        self.shop_display()
         self.wait_for_shop_key()
     
     def shop_display(self):
@@ -422,18 +421,18 @@ class Shop(pg.sprite.Sprite):
                                 self.game.player1.hitpoints += 25
                                 self.game.player1.moneybag += -self.price
                         elif self.ammo_button.collidepoint(self.mouse_pos) and self.ammo_txtcolor != RED:
-                            self.game.player1.ammo = 20
-                            self.game.player1.moneybag -= self.price
+                            self.game.player1.ammo = self.game.player1.round
+                            self.game.player1.moneybag += -self.price
                         elif self.round_button.collidepoint(self.mouse_pos) and self.round_txtcolor != RED:
                             self.game.player1.round += 10
-                            self.game.player1.moneybag -= self.price
+                            self.game.player1.moneybag += -self.price
                         
                 if key[pg.K_ESCAPE]:
                     waiting = False
                 if key[pg.K_s]:
-                    self.current_display = self.weapons_display()
+                    self.current_display = 'weapons'
                 if key[pg.K_w]:
-                    self.current_display = self.shop_display()
+                    self.current_display = 'powerups'
 
                 self.update()
                 
@@ -442,6 +441,10 @@ class Shop(pg.sprite.Sprite):
     
     def update(self):
         self.screen.fill(BLACK)
+        if self.current_display == 'powerups':
+            self.shop_display()
+        elif self.current_display == 'weapons':
+            self.weapons_display()
 
 
 

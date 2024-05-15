@@ -37,7 +37,8 @@ class Player1(pg.sprite.Sprite):
         self.moneybag = 0        # coins collected
         self.coin_multiplier, self.mult_max = 1, 5
         self.hitpoints, self.health_max = 100, 100
-        self.ammo, self.round, self.round_max = 20, 20, 50
+        self.ammo = 20
+        self.round, self.round_max = 20, 50
 
         self.ghost, self.cooling = False, False
         self.hypotenuse = ''
@@ -174,8 +175,7 @@ class Wall(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(BLUE)
+        self.image = game.wall_img
         self.rect = self.image.get_rect()
         self.x, self.y = x, y
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
