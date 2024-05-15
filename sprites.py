@@ -37,6 +37,7 @@ class Player1(pg.sprite.Sprite):
         self.moneybag = 0        # coins collected
         self.coin_multiplier, self.mult_max = 1, 5
         self.hitpoints, self.health_max = 100, 100
+        self.ammo, self.ammo_max = 20, 20
 
         self.ghost, self.cooling = False, False
         self.hypotenuse = ''
@@ -61,7 +62,9 @@ class Player1(pg.sprite.Sprite):
         if keys[pg.K_s]:        # if s-key pressed
             self.vy = self.speed        # y increases = move down
         if keys[pg.K_SPACE]:
-            self.shoot()
+            if self.ammo > 0:
+                self.shoot()
+                self.ammo -= 1
     
     def shoot(self):
         round = Bullet(self.game, self.rect.x, self.rect.y)
@@ -360,4 +363,4 @@ class Bullet(pg.sprite.Sprite):
         self.collide_with_group(self.game.mobs, False)
         self.collide_with_group(self.game.walls, False)
         self.collide_with_group(self.game.borders, False)
-        self.rect.y -= self.speed
+        self.rect.x -= self.speed
