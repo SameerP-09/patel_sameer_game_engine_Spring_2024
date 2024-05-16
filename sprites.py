@@ -85,7 +85,7 @@ class Player1(pg.sprite.Sprite):
     def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         random_power_up = PowerUp.random_effect(self)
-        random_power_down = PowerUp.random_effect(self)
+        random_power_down = PowerDown.random_effect(self)
         if hits:        # if sprite collides with entity
             if str(hits[0].__class__.__name__) == 'Coin':        # if entity == Coin
                 self.moneybag += self.coin_multiplier        # add 1 to moneybag
@@ -119,7 +119,7 @@ class Player1(pg.sprite.Sprite):
                 elif random_power_down == 'degen':
                     self.hitpoints = self.hitpoints - 25
                 
-                elif random_power_down == 'invert keys':
+                if random_power_down == 'invert keys':
                     self.forward = pg.K_s
                     self.backward = pg.K_w
                     self.right = pg.K_a
@@ -249,7 +249,7 @@ class PowerUp(pg.sprite.Sprite):
         if self.coin_multiplier == self.mult_max:
             effects.remove('coin multiplier')
 
-        local_effect = effects[random.randrange(0, len(effects))]
+        local_effect = effects[random.randrange(0, len(effects) - 1)]
         return local_effect
 
 
