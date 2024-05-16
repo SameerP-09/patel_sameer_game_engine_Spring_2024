@@ -244,10 +244,23 @@ class PowerUp(pg.sprite.Sprite):
         effects = ['speed', 'ghost', 'coin multiplier', 'regen']
         if self.game.player1.speed == self.game.player1.speed_max:
             effects.remove('speed')
+        elif self.game.player1.speed < self.game.player1.speed_max and 'speed' not in effects:
+            effects.append('speed')
+
         if self.game.player1.ghost == True:
             effects.remove('ghost')
-        if self.coin_multiplier == self.mult_max:
+        elif self.game.player1.ghost == False and 'ghost' not in effects:
+            effects.append('ghost')
+        
+        if self.game.player1.coin_multiplier == self.game.player1.mult_max:
             effects.remove('coin multiplier')
+        elif self.game.player1.coin_multiplier < self.game.player1.mult_max and 'coin multiplier' not in effects:
+            effects.append('coin multiplier')
+
+        if self.game.player1.hitpoints == self.game.player1.health_max:
+            effects.remove('regen')
+        elif self.game.player1.hitpoints < self.game.player1.health_max:
+            effects.append('regen')
 
         local_effect = effects[random.randrange(0, len(effects) - 1)]
         return local_effect
@@ -410,14 +423,26 @@ class PowerDown(pg.sprite.Sprite):
     
     def random_effect(self):
         effects = ['speed', 'ghost', 'inflation', 'degen', 'invert keys', 'tax']
+
         if self.game.player1.speed == 100:
             effects.remove('speed')
+        elif self.game.player1.speed > 100 and 'speed' not in effects:
+            effects.append('speed')
+        
         if self.game.player1.ghost == False:
             effects.remove('ghost')
+        elif self.game.player1.ghost == True and 'ghost' not in effects:
+            effects.append('ghost')
+        
         if self.game.player1.coin_multiplier == 1:
             effects.remove('inflation')
+        elif self.game.player1.coin_multiplier > 1 and 'inflation' not in effects:
+            effects.append('inflation')
+
         if self.game.player1.hitpoints <= 25:
-            effects.remove ('degen')
+            effects.remove('degen')
+        elif self.game.player1.hitpoints > 25 and 'degen' not in effects:
+            effects.append('degen')
 
         local_effect = effects[random.randrange(0, len(effects))]
         return local_effect
