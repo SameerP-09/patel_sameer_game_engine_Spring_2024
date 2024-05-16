@@ -107,6 +107,11 @@ class Game:
         self.shop_open = False
         self.load_data()
 
+        self.step_x, self.step_y = WIDTH/5, HEIGHT/16
+        self.tile_color, self.tilesize = DARKGREY, (WIDTH/4, HEIGHT/16)
+        self.respawn_button = pg.Rect(self.step_x, 8 * self.step_y, self.tilesize[0], self.tilesize[1])
+        self.quit_button = pg.Rect(3 * self.step_x, 8 * self.step_y, self.tilesize[0], self.tilesize[1])
+
     # load_data() purpose - records game data (scores & positioning)
     def load_data(self):
         # loads images
@@ -277,22 +282,64 @@ class Game:
 
     def all_sprites_gone(self, sprite_group):
         return len(sprite_group) == 0
+    
+    def death_screen(self):
+        draw_text(self.screen, 'You Died!!!', 50, 'midtop', RED, WIDTH/2, HEIGHT/4)
+
+        # ---------- modified from ChatGPT ----------
+        self.tile1 = pg.Surface(self.tilesize)
+        self.tile1.fill(self.tile_color)
+        self.screen.blit(self.tile1, (self.step_x, 8 * self.step_y))
+        draw_text(self.screen, 'Respawn', 35, 'topleft', RED, self.step_x, 8 * self.step_y)
+
+        self.tile2 = pg.Surface(self.tilesize)
+        self.tile2.fill(self.tile_color)
+        self.screen.blit(self.tile2, (3 * self.step_x, 8 * self.step_y))
+        draw_text(self.screen, 'Quit Game', 35, 'topleft', RED, 3 * self.step_x, 8 * self.step_y)
+
+        # -------------------------------------------
+
+        pg.display.flip()
+
+    def respawn_or_quit(self):
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.game.quit()
+
+                # ---------- modified from ChatGPT ----------
+                elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+                    if pg.mouse.get_pressed()[0]:
+                        self.mouse_pos = pg.mouse.get_pos()
+                        if self.respawn_button.collidepoint(self.mouse_pos):
+                            return
+                    
+                        elif self.quit_button.collidepoint(self.mouse_pos):
+                            waiting = False
+                            self.quit()
+            
+            # -------------------------------------------
+            
+            self.update_end_screen()
 
     def show_go_screen(self):
         if self.all_sprites_gone(self.mobs):
             self.playing = False
             self.screen.fill(BGCOLOR)
-            draw_text(self.screen, 'You Win!!!', 50, 'midtop', WHITE, WIDTH/2, HEIGHT/2 - 30)
             pg.display.flip()
             
         elif self.player1.hitpoints == 0:
             self.playing = False
             self.screen.fill(BGCOLOR)
-            draw_text(self.screen, 'You Died!!!', 50, 'midtop', WHITE, WIDTH/2, HEIGHT/2 - 50)
-            draw_text(self.screen, 'Would you like to respawn?', 50, 'midtop', WHITE, WIDTH/2, HEIGHT/2)
-            draw_text(self.screen, 'You will lose all your progress', 50, 'midtop', WHITE, WIDTH/2, HEIGHT/2 + 50)
             pg.display.flip()
-            self.wait_for_key()
+            self.respawn_or_quit()
+    
+    def update_end_screen(self):
+        self.screen.fill(BLACK)
+        self.death_screen()
 
 
 
@@ -490,4 +537,3 @@ g.show_start_screen()
 while True:
     g.new()
     g.run()
-    g.show_go_screen()
