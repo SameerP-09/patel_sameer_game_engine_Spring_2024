@@ -193,6 +193,7 @@ class Game:
             self.events()        # mostly input
             self.update()        # processing
             self.draw()        # output
+            self.show_go_screen()
 
     # quit() purpose - code to end game & close window
     def quit(self):
@@ -274,8 +275,24 @@ class Game:
                 if event.type == pg.KEYUP:
                     waiting = False
 
+    def all_sprites_gone(self, sprite_group):
+        return len(sprite_group) == 0
+
     def show_go_screen(self):
-        pass
+        if self.all_sprites_gone(self.mobs):
+            self.playing = False
+            self.screen.fill(BGCOLOR)
+            draw_text(self.screen, 'You Win!!!', 50, 'midtop', WHITE, WIDTH/2, HEIGHT/2 - 30)
+            pg.display.flip()
+            
+        elif self.player1.hitpoints == 0:
+            self.playing = False
+            self.screen.fill(BGCOLOR)
+            draw_text(self.screen, 'You Died!!!', 50, 'midtop', WHITE, WIDTH/2, HEIGHT/2 - 50)
+            draw_text(self.screen, 'Would you like to respawn?', 50, 'midtop', WHITE, WIDTH/2, HEIGHT/2)
+            draw_text(self.screen, 'You will lose all your progress', 50, 'midtop', WHITE, WIDTH/2, HEIGHT/2 + 50)
+            pg.display.flip()
+            self.wait_for_key()
 
 
 
@@ -318,6 +335,7 @@ class Shop(pg.sprite.Sprite):
     def shop_display(self):
         draw_text(self.screen, 'PowerUp Menu', 50, 'midtop', GREEN, self.step_x, 2 * HEIGHT/16)
 
+        # ---------- modified from ChatGPT ----------
         self.tile1 = pg.Surface(self.tilesize)
         self.tile1.fill(self.tile_color)
         self.screen.blit(self.tile1, (self.step_x, 8 * self.step_y))
@@ -338,6 +356,8 @@ class Shop(pg.sprite.Sprite):
         self.screen.blit(self.tile4, (3 * self.step_x, 12 * self.step_y))
         draw_text(self.screen, 'Regen Potion', 35, 'topleft', self.regen_txtcolor, 3 * self.step_x, 12 * self.step_y)
         
+        # -------------------------------------------
+
         moneybag_stat = self.game.player1.moneybag
         draw_text(self.screen, 'Balance: ' + str(moneybag_stat), 25, 'midtop', WHITE, WIDTH/6, 4 * HEIGHT/12)
 
@@ -447,7 +467,7 @@ class Shop(pg.sprite.Sprite):
                 if key[pg.K_w]:
                     self.current_display = 'powerups'
 
-                self.update()
+            self.update()
                 
         self.game.shop_open = False
         self.game.player1.x, self.game.player1.y = SPAWN[0] * TILESIZE, SPAWN[1] * TILESIZE
@@ -470,4 +490,4 @@ g.show_start_screen()
 while True:
     g.new()
     g.run()
-    # g.show_go_screen()
+    g.show_go_screen()
