@@ -112,6 +112,8 @@ class Game:
         self.respawn_button = pg.Rect(self.step_x, 8 * self.step_y, self.tilesize[0], self.tilesize[1])
         self.quit_button = pg.Rect(3 * self.step_x, 8 * self.step_y, self.tilesize[0], self.tilesize[1])
 
+        self.outcome, self.outcome_txtcolor = '', ''
+
     # load_data() purpose - records game data (scores & positioning)
     def load_data(self):
         # loads images
@@ -283,19 +285,20 @@ class Game:
     def all_sprites_gone(self, sprite_group):
         return len(sprite_group) == 0
     
-    def death_screen(self):
-        draw_text(self.screen, 'You Died!!!', 50, 'midtop', RED, WIDTH/2, HEIGHT/4)
+    def end_screen(self):
+        
+        draw_text(self.screen, self.outcome, 50, 'midtop', self.outcome_txtcolor, WIDTH/2, HEIGHT/4)
 
         # ---------- modified from ChatGPT ----------
         self.tile1 = pg.Surface(self.tilesize)
         self.tile1.fill(self.tile_color)
         self.screen.blit(self.tile1, (self.step_x, 8 * self.step_y))
-        draw_text(self.screen, 'Respawn', 35, 'topleft', RED, self.step_x, 8 * self.step_y)
+        draw_text(self.screen, 'Respawn', 35, 'topleft', self.outcome_txtcolor, self.step_x, 8 * self.step_y)
 
         self.tile2 = pg.Surface(self.tilesize)
         self.tile2.fill(self.tile_color)
         self.screen.blit(self.tile2, (3 * self.step_x, 8 * self.step_y))
-        draw_text(self.screen, 'Quit Game', 35, 'topleft', RED, 3 * self.step_x, 8 * self.step_y)
+        draw_text(self.screen, 'Quit Game', 35, 'topleft', self.outcome_txtcolor, 3 * self.step_x, 8 * self.step_y)
 
         # -------------------------------------------
 
@@ -328,18 +331,21 @@ class Game:
     def show_go_screen(self):
         if self.all_sprites_gone(self.mobs):
             self.playing = False
+            self.outcome, self.outcome_txtcolor = 'You Win!!!', GREEN
             self.screen.fill(BGCOLOR)
             pg.display.flip()
+            self.respawn_or_quit()
             
         elif self.player1.hitpoints == 0:
             self.playing = False
+            self.outcome, self.outcome_txtcolor = 'You Died!!!', RED
             self.screen.fill(BGCOLOR)
             pg.display.flip()
             self.respawn_or_quit()
     
     def update_end_screen(self):
         self.screen.fill(BLACK)
-        self.death_screen()
+        self.end_screen()
 
 
 
