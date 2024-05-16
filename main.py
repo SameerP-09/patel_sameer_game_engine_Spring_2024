@@ -119,9 +119,8 @@ class Game:
         self.powerdown_img = pg.image.load(path.join(img_folder, 'PowerDown.png')).convert_alpha()
         self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()
         self.mob_img = pg.image.load(path.join(img_folder, 'Mob.png')).convert_alpha()
-        self.ghost_mario_img = pg.image.load(path.join(img_folder, 'Ghost_Mario.png')).convert_alpha()
         self.border_img = pg.image.load(path.join(img_folder, 'Border.png')).convert_alpha()
-        
+
         #self.map_data = []
         self.map = Map(path.join(game_folder, 'single_player_map.txt'))
 
@@ -360,14 +359,14 @@ class Shop(pg.sprite.Sprite):
         draw_text(self.screen, 'Weapon Upgrades', 50, 'midtop', GREEN, self.step_x, 2 * HEIGHT/16)
 
         # ---------- modified from ChatGPT ----------
-        self.tile1 = pg.Surface(self.tilesize)
-        self.tile1.fill(self.tile_color)
-        self.screen.blit(self.tile1, (self.step_x, 8 * self.step_y))
+        self.tile5 = pg.Surface(self.tilesize)
+        self.tile5.fill(self.tile_color)
+        self.screen.blit(self.tile5, (self.step_x, 8 * self.step_y))
         draw_text(self.screen, 'More Ammo', 35, 'topleft', self.ammo_txtcolor, self.step_x, 8 * self.step_y)
 
-        self.tile2 = pg.Surface(self.tilesize)
-        self.tile2.fill(self.tile_color)
-        self.screen.blit(self.tile2, (3 * self.step_x, 8 * self.step_y))
+        self.tile6 = pg.Surface(self.tilesize)
+        self.tile6.fill(self.tile_color)
+        self.screen.blit(self.tile6, (3 * self.step_x, 8 * self.step_y))
         draw_text(self.screen, 'Round Upgrade', 35, 'topleft', self.round_txtcolor, 3 * self.step_x, 8 * self.step_y)
 
         # -------------------------------------------

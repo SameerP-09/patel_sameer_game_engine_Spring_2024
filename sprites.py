@@ -46,7 +46,7 @@ class Player1(pg.sprite.Sprite):
         # needed for animated sprite
         self.spritesheet = Spritesheet(path.join(img_folder, Player1_sheet))
         self.load_images()
-        self.image = self.standing_frames[0]
+        self.image = self.material_frames[0]
         self.current_frame = 0
         self.last_update = 0
 
@@ -96,9 +96,8 @@ class Player1(pg.sprite.Sprite):
                 
                 elif random_power_up == 'ghost':
                     self.ghost = True        # overrides collide_with_walls()
-                    self.image = self.game.ghost_mario_img
 
-                elif random_power_up == '2x coin':    
+                elif random_power_up == 'coin multiplier':    
                     self.coin_multiplier += 1
 
                 elif random_power_up == 'regen' and self.hitpoints +25 <= self.health_max:
@@ -114,11 +113,11 @@ class Player1(pg.sprite.Sprite):
                 elif random_power_down == 'ghost':
                     self.ghost = False
 
-                elif random_power_down == '2x coin':    
+                elif random_power_down == 'inflation':    
                     self.coin_multiplier -= 1
 
-                elif random_power_down == 'degen' and self.hitpoints +25 <= self.health_max:
-                    self.hitpoints = self.hitpoints / 2
+                elif random_power_down == 'degen':
+                    self.hitpoints = self.hitpoints - 25
                 
                 elif random_power_down == 'invert keys':
                     self.forward = pg.K_s
@@ -141,16 +140,25 @@ class Player1(pg.sprite.Sprite):
                 self.game.shop_open = True
     
     def load_images(self):
-        self.standing_frames = [self.spritesheet.get_image(0, 0, 32, 32),
+        self.material_frames = [self.spritesheet.get_image(0, 0, 32, 32),
                                 self.spritesheet.get_image(32, 0, 32, 32)]
+        
+        self.ghost_frames = [self.spritesheet.get_image(64, 0, 32, 32),
+                            self.spritesheet.get_image(96, 0, 32, 32)]
+        
 
     def animate(self):
         now = pg. time.get_ticks()
+        if self.ghost == False:
+            self.current_imgs = self.material_frames
+        else:
+            self.current_imgs = self.ghost_frames
+        
         if now - self.last_update > 350:
             self.last_update = now
-            self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
+            self.current_frame = (self.current_frame + 1) % len(self.current_imgs)
             bottom = self.rect.bottom
-            self.image = self.standing_frames[self.current_frame]
+            self.image = self.current_imgs[self.current_frame]
             self.rect = self.image.get_rect()
             self.rect.bottom = bottom
 
@@ -233,13 +241,13 @@ class PowerUp(pg.sprite.Sprite):
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
     
     def random_effect(self):
-        effects = ['speed', 'ghost', '2x coin', 'regen']
+        effects = ['speed', 'ghost', 'coin multiplier', 'regen']
         if self.game.player1.speed == self.game.player1.speed_max:
             effects.remove('speed')
         if self.game.player1.ghost == True:
             effects.remove('ghost')
         if self.coin_multiplier == self.mult_max:
-            effects.remove('2x coin')
+            effects.remove('coin multiplier')
 
         local_effect = effects[random.randrange(0, len(effects))]
         return local_effect
@@ -363,7 +371,7 @@ class Bullet(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface ((TILESIZE/4, TILESIZE/4))
+        self.image = pg.Surface((TILESIZE/4, TILESIZE/4))
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.x, self.y = x, y
@@ -401,11 +409,15 @@ class PowerDown(pg.sprite.Sprite):
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE
     
     def random_effect(self):
-        effects = ['speed', 'ghost', '2x coin', 'degen', 'invert keys', 'tax']
+        effects = ['speed', 'ghost', 'inflation', 'degen', 'invert keys', 'tax']
         if self.game.player1.speed == 100:
             effects.remove('speed')
         if self.game.player1.ghost == False:
             effects.remove('ghost')
+        if self.game.player1.coin_multiplier == 1:
+            effects.remove('inflation')
+        if self.game.player1.hitpoints <= 25:
+            effects.remove ('degen')
 
         local_effect = effects[random.randrange(0, len(effects))]
         return local_effect
