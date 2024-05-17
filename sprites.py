@@ -85,7 +85,7 @@ class Player1(pg.sprite.Sprite):
     # purpose: prevents sprites from moving through walls (unless player has ghost powerup)
     def collide_with_walls(self, dir):        # dir - direction
         if self.ghost == False:               # if player can't move through walls
-            collide_with_walls(self, dir, self.game.walls)      # calls collid_with walls from utils
+            collide_with_walls(self, dir, self.game.walls)      # calls collide_with walls from utils
     
     # purpose: prevents sprites from moving through game borders
     def collide_with_borders(self, dir):
@@ -129,7 +129,7 @@ class Player1(pg.sprite.Sprite):
                 elif random_power_down == 'degen':                  # if degen powerdown, decrease player hitpoints by 25
                     self.hitpoints = self.hitpoints - 25
                 
-                if random_power_down == 'invert keys':              # if invert keys powerdown, swap corresponding keys and directions
+                elif random_power_down == 'invert keys':              # if invert keys powerdown, swap corresponding keys and directions
                     self.forward = pg.K_s
                     self.backward = pg.K_w
                     self.right = pg.K_a
