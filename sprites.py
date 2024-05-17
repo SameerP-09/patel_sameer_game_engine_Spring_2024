@@ -412,12 +412,15 @@ class Mob(pg.sprite.Sprite):
     
     def sensor(self):
         self.target = ''        # the player the mob chases
-        player1_x_dist = self.rect.x - self.game.player1.rect.x         # horizontal distance betw. player and mob
-        player1_y_dist = self.rect.y - self.game.player1.rect.y         # vertical distance betw. player and mob
-        self.game.player1.hypotenuse = sqrt(player1_x_dist**2 + player1_y_dist**2)  # Pythagorean Theorem to find straight line distance betw. player and mob
+        # horizontal distance betw. player and mob
+        player1_x_dist = self.rect.x - self.game.player1.rect.x
+        # vertical distance betw. player and mob
+        player1_y_dist = self.rect.y - self.game.player1.rect.y
+        # Pythagorean Theorem to find straight line distance betw. player and mob
+        self.game.player1.hypotenuse = sqrt(player1_x_dist**2 + player1_y_dist**2)
 
-        if self.game.player1.hitpoints > 0:                             # if player is alive,
-            if self.game.player1.hypotenuse < self.chase_distance:      # if player is in chase distance, chase player
+        if self.game.player1.hitpoints > 0:                         # if player is alive,
+            if self.game.player1.hypotenuse < self.chase_distance:  # if player is in chase dist, chase player
                 self.chasing = True
                 self.target = self.game.player1
                 return self.target
