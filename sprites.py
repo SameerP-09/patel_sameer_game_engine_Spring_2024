@@ -462,8 +462,7 @@ class ShopKeeper(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.shopkeepers
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(RED)
+        self.image = self.game.shopkeeper_img
         self.rect = self.image.get_rect()
         self.x, self.y = x, y
         self.rect.x, self.rect.y = x * TILESIZE, y * TILESIZE

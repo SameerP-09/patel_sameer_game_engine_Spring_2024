@@ -140,14 +140,15 @@ class Game:
         # loads images
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'images')       # image folder
-        self.player1_img = pg.image.load(path.join(img_folder, 'Mario.png')).convert_alpha()        # player image
-        self.wall_img = pg.image.load(path.join(img_folder, 'Wall.png')).convert_alpha()            # wall image
-        self.coin_img = pg.image.load(path.join(img_folder, 'Coin.png')).convert_alpha()            # coin image
-        self.powerup_img = pg.image.load(path.join(img_folder, 'PowerUp.png')).convert_alpha()      # powerup image
-        self.powerdown_img = pg.image.load(path.join(img_folder, 'PowerDown.png')).convert_alpha()  # powerdown image
-        self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()      # teleport image
-        self.mob_img = pg.image.load(path.join(img_folder, 'Mob.png')).convert_alpha()              # mob image
-        self.border_img = pg.image.load(path.join(img_folder, 'Border.png')).convert_alpha()        # border image
+        self.player1_img = pg.image.load(path.join(img_folder, 'Mario.png')).convert_alpha()                # player image
+        self.wall_img = pg.image.load(path.join(img_folder, 'Wall.png')).convert_alpha()                    # wall image
+        self.coin_img = pg.image.load(path.join(img_folder, 'Coin.png')).convert_alpha()                    # coin image
+        self.powerup_img = pg.image.load(path.join(img_folder, 'PowerUp.png')).convert_alpha()              # powerup image
+        self.powerdown_img = pg.image.load(path.join(img_folder, 'PowerDown.png')).convert_alpha()          # powerdown image
+        self.portal_img = pg.image.load(path.join(img_folder, 'Teleport.png')).convert_alpha()              # teleport image
+        self.mob_img = pg.image.load(path.join(img_folder, 'Mob.png')).convert_alpha()                      # mob image
+        self.border_img = pg.image.load(path.join(img_folder, 'Border.png')).convert_alpha()                # border image
+        self.shopkeeper_img = pg.image.load(path.join(img_folder, 'Mushroom.png')).convert_alpha()        # shopkeeper image
 
         # self.map_data = []
         self.map = Map(path.join(game_folder, 'single_player_map.txt'))     # assigns map to self.map
@@ -317,7 +318,7 @@ class Game:
         self.tile1 = pg.Surface(self.tilesize)
         self.tile1.fill(self.tile_color)
         self.screen.blit(self.tile1, (self.step_x, 8 * self.step_y))
-        draw_text(self.screen, 'Respawn', 35, 'topleft', self.outcome_txtcolor, self.step_x, 8 * self.step_y)
+        draw_text(self.screen, 'Play Again', 35, 'topleft', self.outcome_txtcolor, self.step_x, 8 * self.step_y)
 
         self.tile2 = pg.Surface(self.tilesize)
         self.tile2.fill(self.tile_color)
