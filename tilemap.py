@@ -1,4 +1,5 @@
 # This file was created by: Sameer Patel
+# Copied entirely from Mr. Cozort's code in Github
 # Changes to Mr. Cozort's file appear in One Drive (link in Canvas)
 
 import pygame as pg
